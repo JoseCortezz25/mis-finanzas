@@ -28,12 +28,7 @@ export default function CrearPresupuestoPage() {
       title={BUDGET_MESSAGES.DIALOG.CREATE_TITLE}
       description={BUDGET_MESSAGES.DIALOG.CREATE_DESCRIPTION}
     >
-      <div className="mx-auto max-w-2xl">
-        <BudgetForm
-          onSubmit={handleSubmit}
-          isLoading={createBudget.isPending}
-        />
-      </div>
+      <BudgetForm onSubmit={handleSubmit} isLoading={createBudget.isPending} />
     </PageLayout>
   );
 }

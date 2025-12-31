@@ -6,6 +6,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { AppHeader } from '@/components/organisms/app-header';
 import { MobileBottomNav } from '@/components/organisms/mobile-bottom-nav';
+import { FloatingActionButton } from '@/components/organisms/floating-action-button';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -53,6 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </main>
 
       <MobileBottomNav />
+      <FloatingActionButton />
     </div>
   );
 }

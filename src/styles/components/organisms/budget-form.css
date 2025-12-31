@@ -1,0 +1,132 @@
+/**
+ * Budget Form Component Styles
+ * Clean form integrated into page layout
+ */
+
+.budget-form {
+  @apply w-full;
+  @apply p-0;
+}
+
+.budget-form__header {
+  @apply flex items-center justify-between mb-8;
+}
+
+.budget-form__title {
+  @apply text-2xl font-bold text-slate-900;
+  @apply tracking-tight;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply text-3xl;
+  }
+}
+
+.budget-form__close {
+  @apply flex items-center justify-center;
+  @apply w-9 h-9 rounded-full;
+  @apply text-slate-600 hover:text-slate-900;
+  @apply hover:bg-slate-100;
+  @apply transition-all duration-200 ease-out;
+  @apply focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2;
+  @apply active:scale-95;
+}
+
+.budget-form__content {
+  @apply space-y-6;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply space-y-8;
+  }
+}
+
+.budget-form__divider {
+  @apply h-px bg-slate-100 my-6;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply my-8;
+  }
+}
+
+.budget-form__error {
+  @apply text-sm font-medium text-rose-600 mt-2;
+  animation: shake 0.3s ease-in-out;
+}
+
+.budget-form__submit {
+  @apply w-full rounded-2xl py-4 px-6;
+  @apply bg-slate-100 hover:bg-slate-200;
+  @apply text-slate-700 hover:text-slate-900;
+  @apply font-semibold text-base;
+  @apply transition-all duration-300 ease-out;
+  @apply shadow-sm hover:shadow-md;
+  @apply focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2;
+  @apply active:scale-[0.99];
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply py-5 text-lg;
+  }
+}
+
+.budget-form__submit:not(:disabled):hover {
+  @apply bg-slate-900 text-white;
+}
+
+.budget-form__submit--disabled {
+  @apply opacity-50 cursor-not-allowed;
+  @apply hover:bg-slate-100 hover:text-slate-700 hover:shadow-sm;
+  @apply active:scale-100;
+}
+
+/* Animations */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* Staggered entrance animation for form elements */
+.budget-form__content > * {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.budget-form__content > *:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.budget-form__content > *:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.budget-form__content > *:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.budget-form__content > *:nth-child(4) {
+  animation-delay: 0.25s;
+}
+
+.budget-form__content > *:nth-child(5) {
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

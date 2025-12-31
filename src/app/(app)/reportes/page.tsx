@@ -120,8 +120,8 @@ export default function ReportesPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 py-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto space-y-6 px-6 py-6">
+      <div className="flex w-full flex-col items-start justify-between gap-4 sm:flex-row md:items-center">
         <div>
           <h1 className="text-3xl font-bold">Reportes</h1>
           <p className="text-muted-foreground">
@@ -130,7 +130,7 @@ export default function ReportesPage() {
         </div>
 
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Selecciona período" />
           </SelectTrigger>
           <SelectContent>
@@ -142,7 +142,7 @@ export default function ReportesPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">

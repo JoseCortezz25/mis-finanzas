@@ -2,36 +2,34 @@
 
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-interface FloatingActionButtonProps {
-  href: string;
-  label?: string;
-  className?: string;
-}
 
 /**
  * Floating Action Button (FAB)
- * Fixed button in bottom right corner for primary actions
+ * Mobile-only circular button to create new transaction
+ * Fixed in bottom right corner, above mobile navigation
+ * Hidden on create/edit pages
  */
-export function FloatingActionButton({
-  href,
-  label = 'Nuevo',
-  className
-}: FloatingActionButtonProps) {
+export function FloatingActionButton() {
+  const pathname = usePathname();
+
+  // Hide FAB on create and edit pages
+  const hiddenPaths = ['/movimientos/crear', '/movimientos/editar'];
+  const shouldHide = hiddenPaths.some(path => pathname?.startsWith(path));
+
+  if (shouldHide) {
+    return null;
+  }
+
   return (
-    <Link href={href}>
+    <Link href="/movimientos/crear" className="md:hidden">
       <Button
         size="lg"
-        className={cn(
-          'fixed right-6 bottom-20 z-40 h-14 w-14 rounded-full shadow-lg transition-shadow hover:shadow-xl md:bottom-6',
-          'md:h-auto md:w-auto md:rounded-md md:px-6',
-          className
-        )}
+        className="fixed right-6 bottom-20 z-40 h-14 w-14 rounded-full shadow-lg transition-shadow hover:shadow-xl"
+        aria-label="Crear nuevo movimiento"
       >
-        <Plus className="h-6 w-6 md:mr-2" />
-        <span className="hidden md:inline">{label}</span>
+        <Plus className="h-6 w-6" />
       </Button>
     </Link>
   );

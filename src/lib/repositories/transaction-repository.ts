@@ -12,7 +12,10 @@ export type TransactionUpdate =
  * Transaction Repository
  * Handles all transaction-related database operations
  */
-export class TransactionRepository extends SupabaseRepository<Transaction> {
+export class TransactionRepository extends SupabaseRepository<
+  Transaction,
+  'transactions'
+> {
   constructor(supabase: SupabaseClient<Database>) {
     super(supabase, 'transactions');
   }
@@ -126,7 +129,8 @@ export class TransactionRepository extends SupabaseRepository<Transaction> {
 
     if (error) throw error;
 
-    return data.reduce((sum, t) => sum + t.amount, 0);
+    const transactions = (data || []) as Array<{ amount: number }>;
+    return transactions.reduce((sum, t) => sum + t.amount, 0);
   }
 
   /**
@@ -154,7 +158,8 @@ export class TransactionRepository extends SupabaseRepository<Transaction> {
 
     if (error) throw error;
 
-    return data.reduce((sum, t) => sum + t.amount, 0);
+    const transactions = (data || []) as Array<{ amount: number }>;
+    return transactions.reduce((sum, t) => sum + t.amount, 0);
   }
 
   /**

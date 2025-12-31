@@ -10,7 +10,7 @@ export type BudgetUpdate = Database['public']['Tables']['budgets']['Update'];
  * Budget Repository
  * Handles all budget-related database operations
  */
-export class BudgetRepository extends SupabaseRepository<Budget> {
+export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
   constructor(supabase: SupabaseClient<Database>) {
     super(supabase, 'budgets');
   }
@@ -125,11 +125,15 @@ export class BudgetRepository extends SupabaseRepository<Budget> {
 
     if (error) throw error;
 
+    const budgets = (data || []) as Array<{
+      status: 'draft' | 'active' | 'closed';
+    }>;
+
     const stats = {
-      total: data.length,
-      active: data.filter(b => b.status === 'active').length,
-      draft: data.filter(b => b.status === 'draft').length,
-      closed: data.filter(b => b.status === 'closed').length
+      total: budgets.length,
+      active: budgets.filter(b => b.status === 'active').length,
+      draft: budgets.filter(b => b.status === 'draft').length,
+      closed: budgets.filter(b => b.status === 'closed').length
     };
 
     return stats;

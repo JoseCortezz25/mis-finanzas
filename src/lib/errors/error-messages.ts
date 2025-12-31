@@ -121,7 +121,7 @@ export function getUserFriendlyError(error: unknown): string {
 export function isNetworkError(error: unknown): boolean {
   if (error && typeof error === 'object') {
     const err = error as { message?: string; name?: string };
-    return (
+    return !!(
       err.name === 'NetworkError' ||
       err.message?.includes('fetch') ||
       err.message?.includes('network')

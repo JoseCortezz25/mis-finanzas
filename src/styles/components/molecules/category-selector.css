@@ -1,0 +1,108 @@
+/**
+ * Category Selector Component Styles
+ * Refined pastel aesthetic with smooth interactions
+ */
+
+.category-selector {
+  @apply w-full;
+}
+
+.category-selector__label {
+  @apply block text-xs font-semibold tracking-wider text-slate-400 mb-4;
+  letter-spacing: 0.1em;
+}
+
+.category-selector__grid {
+  @apply grid grid-cols-2 gap-3;
+
+  /* Desktop: 4 columns */
+  @media (min-width: 768px) {
+    @apply grid-cols-4 gap-4;
+  }
+}
+
+.category-selector__item {
+  @apply relative flex flex-col items-center justify-center;
+  @apply bg-white border border-slate-100;
+  @apply rounded-3xl p-5 transition-all duration-300 ease-out;
+  @apply hover:border-slate-200 hover:shadow-sm;
+  @apply focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2;
+  @apply active:scale-[0.98];
+  min-height: 110px;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply p-6;
+    min-height: 130px;
+  }
+}
+
+.category-selector__item--selected {
+  @apply border-slate-300 shadow-md bg-slate-50/50;
+  @apply ring-2 ring-slate-200 ring-offset-2;
+}
+
+.category-selector__item--disabled {
+  @apply opacity-50 cursor-not-allowed;
+  @apply hover:border-slate-100 hover:shadow-none;
+}
+
+.category-selector__icon-wrapper {
+  @apply relative mb-3 flex items-center justify-center;
+  width: 56px;
+  height: 56px;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.category-selector__icon-bg {
+  @apply absolute rounded-full;
+  @apply transition-transform duration-300 ease-out;
+  @apply top-0 left-0;
+  width: 56px;
+  height: 56px;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.category-selector__item:hover .category-selector__icon-bg {
+  @apply scale-110;
+}
+
+.category-selector__item--selected .category-selector__icon-bg {
+  @apply scale-105;
+}
+
+.category-selector__icon {
+  @apply relative z-10 transition-transform duration-300 ease-out;
+}
+
+.category-selector__item:hover .category-selector__icon {
+  @apply scale-110;
+}
+
+.category-selector__label-text {
+  @apply text-sm font-medium text-slate-700 text-center;
+  @apply transition-colors duration-200;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply text-base;
+  }
+}
+
+.category-selector__item:hover .category-selector__label-text {
+  @apply text-slate-900;
+}
+
+.category-selector__item--selected .category-selector__label-text {
+  @apply text-slate-900 font-semibold;
+}

@@ -28,6 +28,7 @@ export abstract class SupabaseRepository<
     const { data, error } = await this.supabase
       .from(this.tableName)
       .select('*')
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
@@ -45,7 +46,9 @@ export abstract class SupabaseRepository<
     const { data, error } = await this.supabase
       .from(this.tableName)
       .select('*')
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('id', id)
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId)
       .single();
 
@@ -64,10 +67,10 @@ export abstract class SupabaseRepository<
    * @returns Created record
    */
   async create(data: Partial<T>, userId: string): Promise<T> {
-    type InsertData = Partial<T> & { user_id: string };
     const { data: created, error } = await this.supabase
       .from(this.tableName)
-      .insert({ ...data, user_id: userId } as InsertData)
+      // @ts-expect-error - Generic type limitation with Supabase
+      .insert({ ...data, user_id: userId })
       .select()
       .single();
 
@@ -85,8 +88,11 @@ export abstract class SupabaseRepository<
   async update(id: string, data: Partial<T>, userId: string): Promise<T> {
     const { data: updated, error } = await this.supabase
       .from(this.tableName)
-      .update(data as Partial<T>)
+      // @ts-expect-error - Generic type limitation with Supabase
+      .update(data)
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('id', id)
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId)
       .select()
       .single();
@@ -104,7 +110,9 @@ export abstract class SupabaseRepository<
     const { error } = await this.supabase
       .from(this.tableName)
       .delete()
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('id', id)
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId);
 
     if (error) throw error;
@@ -119,6 +127,7 @@ export abstract class SupabaseRepository<
     const { count, error } = await this.supabase
       .from(this.tableName)
       .select('*', { count: 'exact', head: true })
+      // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId);
 
     if (error) throw error;

@@ -12,7 +12,10 @@ export type CategoryUpdate =
  * Category Repository
  * Handles all category-related database operations
  */
-export class CategoryRepository extends SupabaseRepository<Category> {
+export class CategoryRepository extends SupabaseRepository<
+  Category,
+  'categories'
+> {
   constructor(supabase: SupabaseClient<Database>) {
     super(supabase, 'categories');
   }

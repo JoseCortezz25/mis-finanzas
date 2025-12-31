@@ -71,6 +71,7 @@ export interface Database {
           id: string;
           user_id: string;
           name: string;
+          category: string;
           total_amount: number;
           month: number;
           year: number;
@@ -82,6 +83,7 @@ export interface Database {
           id?: string;
           user_id: string;
           name: string;
+          category: string;
           total_amount: number;
           month: number;
           year: number;
@@ -93,6 +95,7 @@ export interface Database {
           id?: string;
           user_id?: string;
           name?: string;
+          category?: string;
           total_amount?: number;
           month?: number;
           year?: number;

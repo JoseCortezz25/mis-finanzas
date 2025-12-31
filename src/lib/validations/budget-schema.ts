@@ -8,6 +8,7 @@ export const budgetSchema = z.object({
     .string()
     .min(1, 'El nombre es requerido')
     .max(100, 'El nombre no puede exceder 100 caracteres'),
+  category: z.string().min(1, 'La categoría es requerida'),
   total_amount: z
     .number()
     .positive('El monto debe ser mayor a 0')

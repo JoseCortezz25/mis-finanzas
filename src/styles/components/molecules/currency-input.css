@@ -1,0 +1,75 @@
+/**
+ * Currency Input Component Styles
+ * Refined, large input with currency prefix
+ */
+
+.currency-input {
+  @apply w-full;
+}
+
+.currency-input__label {
+  @apply block text-xs font-semibold tracking-wider text-slate-400 mb-4;
+  letter-spacing: 0.1em;
+}
+
+.currency-input__wrapper {
+  @apply relative flex items-center;
+  @apply bg-slate-50/80 border border-slate-200;
+  @apply rounded-2xl px-5 py-4;
+  @apply transition-all duration-300 ease-out;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply px-6 py-5;
+  }
+}
+
+.currency-input__wrapper--focused {
+  @apply bg-white border-slate-300 shadow-sm;
+  @apply ring-2 ring-slate-200 ring-offset-1;
+}
+
+.currency-input__wrapper--disabled {
+  @apply opacity-50 cursor-not-allowed bg-slate-50;
+}
+
+.currency-input__currency {
+  @apply text-base font-semibold text-slate-500 mr-3;
+  @apply transition-colors duration-200;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply text-lg mr-4;
+  }
+}
+
+.currency-input__wrapper--focused .currency-input__currency {
+  @apply text-slate-700;
+}
+
+.currency-input__field {
+  @apply flex-1 bg-transparent border-0 outline-none;
+  @apply text-2xl font-bold text-slate-900;
+  @apply placeholder:text-slate-300;
+  font-variant-numeric: tabular-nums;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply text-3xl;
+  }
+}
+
+.currency-input__field:disabled {
+  @apply cursor-not-allowed;
+}
+
+/* Remove number input arrows */
+.currency-input__field::-webkit-outer-spin-button,
+.currency-input__field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.currency-input__field[type='number'] {
+  -moz-appearance: textfield;
+}

@@ -25,7 +25,6 @@ import { es } from 'date-fns/locale';
 import { PageLayout } from '@/components/templates/page-layout';
 import { EmptyState } from '@/components/molecules/empty-state';
 import { DataTableActions } from '@/components/molecules/data-table-actions';
-import { FloatingActionButton } from '@/components/organisms/floating-action-button';
 import { TRANSACTION_MESSAGES } from '@/domains/transaction/messages';
 
 export default function MovimientosPage() {
@@ -46,100 +45,93 @@ export default function MovimientosPage() {
   };
 
   return (
-    <>
-      <PageLayout
-        title={TRANSACTION_MESSAGES.PAGE.TITLE}
-        description={TRANSACTION_MESSAGES.PAGE.SUBTITLE}
-        isLoading={isLoading}
-        loadingMessage={TRANSACTION_MESSAGES.LOADING.LIST}
-      >
-        {transactions && transactions.length === 0 ? (
-          <EmptyState
-            icon={ArrowUpCircle}
-            title={TRANSACTION_MESSAGES.EMPTY.TITLE}
-            description={TRANSACTION_MESSAGES.EMPTY.DESCRIPTION}
-            actionLabel={TRANSACTION_MESSAGES.EMPTY.ACTION}
-            onAction={() => router.push('/movimientos/crear')}
-          />
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>{TRANSACTION_MESSAGES.PAGE.LIST_TITLE}</CardTitle>
-              <CardDescription>
-                {TRANSACTION_MESSAGES.PAGE.LIST_DESCRIPTION}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{TRANSACTION_MESSAGES.TABLE.TYPE}</TableHead>
-                    <TableHead>{TRANSACTION_MESSAGES.TABLE.DATE}</TableHead>
-                    <TableHead>
-                      {TRANSACTION_MESSAGES.TABLE.DESCRIPTION}
-                    </TableHead>
-                    <TableHead>{TRANSACTION_MESSAGES.TABLE.AMOUNT}</TableHead>
-                    <TableHead className="text-right">
-                      {TRANSACTION_MESSAGES.TABLE.ACTIONS}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions?.map(transaction => (
-                    <TableRow key={transaction.id}>
-                      <TableCell>
-                        {transaction.type === 'income' ? (
-                          <Badge variant="default" className="gap-1">
-                            <ArrowUpCircle className="h-3 w-3" />
-                            {TRANSACTION_MESSAGES.TYPES.INCOME}
-                          </Badge>
-                        ) : (
-                          <Badge variant="destructive" className="gap-1">
-                            <ArrowDownCircle className="h-3 w-3" />
-                            {TRANSACTION_MESSAGES.TYPES.EXPENSE}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {format(new Date(transaction.date), 'dd MMM yyyy', {
-                          locale: es
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {transaction.description ||
-                          TRANSACTION_MESSAGES.NO_DESCRIPTION}
-                      </TableCell>
-                      <TableCell
-                        className={
-                          transaction.type === 'income'
-                            ? 'font-medium text-green-600'
-                            : 'font-medium text-red-600'
+    <PageLayout
+      title={TRANSACTION_MESSAGES.PAGE.TITLE}
+      description={TRANSACTION_MESSAGES.PAGE.SUBTITLE}
+      isLoading={isLoading}
+      loadingMessage={TRANSACTION_MESSAGES.LOADING.LIST}
+    >
+      {transactions && transactions.length === 0 ? (
+        <EmptyState
+          icon={ArrowUpCircle}
+          title={TRANSACTION_MESSAGES.EMPTY.TITLE}
+          description={TRANSACTION_MESSAGES.EMPTY.DESCRIPTION}
+          actionLabel={TRANSACTION_MESSAGES.EMPTY.ACTION}
+          onAction={() => router.push('/movimientos/crear')}
+        />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>{TRANSACTION_MESSAGES.PAGE.LIST_TITLE}</CardTitle>
+            <CardDescription>
+              {TRANSACTION_MESSAGES.PAGE.LIST_DESCRIPTION}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{TRANSACTION_MESSAGES.TABLE.TYPE}</TableHead>
+                  <TableHead>{TRANSACTION_MESSAGES.TABLE.DATE}</TableHead>
+                  <TableHead>
+                    {TRANSACTION_MESSAGES.TABLE.DESCRIPTION}
+                  </TableHead>
+                  <TableHead>{TRANSACTION_MESSAGES.TABLE.AMOUNT}</TableHead>
+                  <TableHead className="text-right">
+                    {TRANSACTION_MESSAGES.TABLE.ACTIONS}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {transactions?.map(transaction => (
+                  <TableRow key={transaction.id}>
+                    <TableCell>
+                      {transaction.type === 'income' ? (
+                        <Badge variant="default" className="gap-1">
+                          <ArrowUpCircle className="h-3 w-3" />
+                          {TRANSACTION_MESSAGES.TYPES.INCOME}
+                        </Badge>
+                      ) : (
+                        <Badge variant="destructive" className="gap-1">
+                          <ArrowDownCircle className="h-3 w-3" />
+                          {TRANSACTION_MESSAGES.TYPES.EXPENSE}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {format(new Date(transaction.date), 'dd MMM yyyy', {
+                        locale: es
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      {transaction.description ||
+                        TRANSACTION_MESSAGES.NO_DESCRIPTION}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        transaction.type === 'income'
+                          ? 'font-medium text-green-600'
+                          : 'font-medium text-red-600'
+                      }
+                    >
+                      {transaction.type === 'income' ? '+' : '-'}$
+                      {transaction.amount.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DataTableActions
+                        onEdit={() =>
+                          router.push(`/movimientos/editar/${transaction.id}`)
                         }
-                      >
-                        {transaction.type === 'income' ? '+' : '-'}$
-                        {transaction.amount.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DataTableActions
-                          onEdit={() =>
-                            router.push(`/movimientos/editar/${transaction.id}`)
-                          }
-                          onDelete={() => handleDelete(transaction.id)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
-      </PageLayout>
-
-      <FloatingActionButton
-        href="/movimientos/crear"
-        label={TRANSACTION_MESSAGES.ACTIONS.CREATE}
-      />
-    </>
+                        onDelete={() => handleDelete(transaction.id)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+    </PageLayout>
   );
 }
