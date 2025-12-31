@@ -27,7 +27,19 @@ const eslintConfig = [
       camelcase: [
         'error',
         {
-          allow: ['api_url', 'Geist_Mono']
+          allow: [
+            'api_url',
+            'Geist_Mono',
+            'category_id',
+            'budget_id',
+            'payment_method',
+            'total_amount',
+            'is_custom',
+            '_cached_at',
+            '_pending_sync',
+            'user_id',
+            'required_error',
+          ]
         }
       ],
       'no-unused-vars': 'off',
