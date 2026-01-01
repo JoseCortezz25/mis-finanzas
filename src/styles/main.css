@@ -1,3 +1,7 @@
+/* Zen Design System - Auth */
+@import './auth/zen-design-system.css';
+
+/* Existing Components */
 @import './components/atoms/input.css';
 @import './components/atoms/button.css';
 @import './components/molecules/category-selector.css';

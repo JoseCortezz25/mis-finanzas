@@ -1,0 +1,344 @@
+/**
+ * Zen Design System
+ * Sistema de diseño para autenticación - Minimalismo Japonés + Brutalismo Suave
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ============================================
+     PALETA DE COLORES - Inspirada en naturaleza
+     ============================================ */
+
+  /* Primarios */
+  --zen-stone: #2D3436;      /* Piedra oscura - textos principales */
+  --zen-sand: #DFE6E9;       /* Arena clara - backgrounds secundarios */
+  --zen-moss: #00B894;       /* Musgo verde - acciones primarias */
+  --zen-clay: #FDCB6E;       /* Arcilla - acentos y highlights */
+
+  /* Neutros */
+  --zen-mist: #F8F9FA;       /* Niebla - background principal */
+  --zen-shadow: #636E72;     /* Sombra - textos secundarios */
+  --zen-slate: #B2BEC3;      /* Pizarra - borders y dividers */
+  --zen-white: #FFFFFF;      /* Blanco puro */
+
+  /* Estados */
+  --zen-error: #FF7675;      /* Error suave */
+  --zen-success: #00B894;    /* Mismo que moss */
+  --zen-warning: #FDCB6E;    /* Mismo que clay */
+
+  /* Registro - Tonos cálidos */
+  --zen-clay-light: #FFE8CC; /* Background suave */
+  --zen-clay-dark: #E17055;  /* Hover states */
+
+  /* Password Strength */
+  --strength-very-weak: #FF7675;
+  --strength-weak: #FDCB6E;
+  --strength-fair: #FFC312;
+  --strength-good: #55EFC4;
+  --strength-strong: #00B894;
+
+  /* ============================================
+     GRADIENTES ATMOSFÉRICOS
+     ============================================ */
+
+  /* Login */
+  --gradient-zen: linear-gradient(135deg, #F8F9FA 0%, #DFE6E9 100%);
+  --gradient-moss: linear-gradient(135deg, #00B894 0%, #00D2A0 100%);
+  --gradient-moss-hover: linear-gradient(135deg, #00D2A0 0%, #55EFC4 100%);
+
+  /* Registro */
+  --gradient-register-bg: linear-gradient(135deg,
+    #FFF5E6 0%,
+    #FFE8CC 50%,
+    #FFE0B2 100%
+  );
+  --gradient-register-button: linear-gradient(135deg,
+    #00B894 0%,
+    #00D2A0 50%,
+    #55EFC4 100%
+  );
+
+  /* ============================================
+     TIPOGRAFÍA
+     ============================================ */
+
+  /* Familias */
+  --font-display: 'Crimson Pro', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Escala tipográfica (basada en 16px base) */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.5rem;     /* 24px */
+  --text-2xl: 2rem;      /* 32px */
+  --text-3xl: 3rem;      /* 48px */
+
+  /* Pesos */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Line heights */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ============================================
+     ESPACIADO - Sistema basado en 8px
+     ============================================ */
+
+  --space-1: 0.5rem;   /* 8px */
+  --space-2: 1rem;     /* 16px */
+  --space-3: 1.5rem;   /* 24px */
+  --space-4: 2rem;     /* 32px */
+  --space-5: 2.5rem;   /* 40px */
+  --space-6: 3rem;     /* 48px */
+  --space-8: 4rem;     /* 64px */
+  --space-10: 5rem;    /* 80px */
+  --space-12: 6rem;    /* 96px */
+  --space-16: 8rem;    /* 128px */
+
+  /* ============================================
+     RADIOS - Bordes redondeados
+     ============================================ */
+
+  --radius-sm: 0.375rem;  /* 6px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 1rem;      /* 16px */
+  --radius-xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;  /* Completamente redondo */
+
+  /* ============================================
+     SOMBRAS - Sutiles pero presentes
+     ============================================ */
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+               0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+               0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+               0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(0, 184, 148, 0.1);
+  --shadow-focus-error: 0 0 0 3px rgba(255, 118, 117, 0.1);
+
+  /* ============================================
+     ANIMACIONES - Naturales y orgánicas
+     ============================================ */
+
+  /* Duración */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+
+  /* Easing */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* ============================================
+     Z-INDEX - Capas
+     ============================================ */
+
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-overlay: 20;
+  --z-modal: 30;
+  --z-toast: 40;
+
+  /* ============================================
+     BREAKPOINTS - Responsive
+     ============================================ */
+
+  --mobile: 320px;
+  --tablet: 768px;
+  --desktop: 1024px;
+  --wide: 1440px;
+}
+
+/* ============================================
+   UTILIDADES GLOBALES
+   ============================================ */
+
+/* Reset de box-sizing para consistencia */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Suavizado de fuentes */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Focus visible para accesibilidad */
+:focus-visible {
+  outline: 2px solid var(--zen-moss);
+  outline-offset: 2px;
+}
+
+/* Transiciones por defecto para elementos interactivos */
+button, a, input, textarea, select {
+  transition: all var(--duration-base) var(--ease-in-out);
+}
+
+/* Prevenir selección de texto en elementos UI */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ============================================
+   CLASES UTILITARIAS
+   ============================================ */
+
+.zen-container {
+  width: 100%;
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.zen-text-display {
+  font-family: var(--font-display);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+}
+
+.zen-text-body {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+}
+
+/* Animación de entrada suave */
+@keyframes zen-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zen-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zen-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zen-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zen-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes zen-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Clases de animación reutilizables */
+.animate-fade-in {
+  animation: zen-fade-in var(--duration-base) var(--ease-out);
+}
+
+.animate-slide-up {
+  animation: zen-slide-up var(--duration-base) var(--ease-out);
+}
+
+.animate-slide-down {
+  animation: zen-slide-down var(--duration-base) var(--ease-out);
+}
+
+.animate-scale-in {
+  animation: zen-scale-in var(--duration-base) var(--ease-out);
+}
+
+.animate-shake {
+  animation: zen-shake var(--duration-slow) var(--ease-in-out);
+}
+
+.animate-bounce-in {
+  animation: zen-bounce-in var(--duration-slow) var(--ease-bounce);
+}
+
+/* Delays para animaciones escalonadas */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+@media (max-width: 767px) {
+  :root {
+    --text-3xl: 2rem;    /* Reduce en mobile */
+    --text-2xl: 1.5rem;
+    --text-xl: 1.25rem;
+  }
+
+  .zen-container {
+    padding: 0 var(--space-2);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet adjustments */
+  .zen-container {
+    padding: 0 var(--space-3);
+  }
+}
