@@ -70,7 +70,10 @@ export default function MovimientosPage() {
                   {TRANSACTION_MESSAGES.PAGE.LIST_DESCRIPTION}
                 </CardDescription>
               </div>
-              <Button onClick={() => router.push('/movimientos/crear')}>
+              <Button
+                onClick={() => router.push('/movimientos/crear')}
+                className="hidden md:block"
+              >
                 Crear Movimiento
               </Button>
             </div>

@@ -103,7 +103,10 @@ export default function PresupuestoPage() {
                   {BUDGET_MESSAGES.PAGE.LIST_DESCRIPTION}
                 </CardDescription>
               </div>
-              <Button onClick={() => router.push('/presupuesto/crear')}>
+              <Button
+                className="hidden md:block"
+                onClick={() => router.push('/presupuesto/crear')}
+              >
                 Crear Presupuesto
               </Button>
             </div>
@@ -129,7 +132,11 @@ export default function PresupuestoPage() {
                     : null;
 
                   return (
-                    <TableRow key={budget.id}>
+                    <TableRow
+                      key={budget.id}
+                      className="hover:bg-accent/50 cursor-pointer"
+                      onClick={() => router.push(`/presupuesto/${budget.id}`)}
+                    >
                       <TableCell className="font-medium">
                         {budget.name}
                       </TableCell>
@@ -164,7 +171,10 @@ export default function PresupuestoPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div
+                          className="flex items-center justify-end gap-2"
+                          onClick={e => e.stopPropagation()}
+                        >
                           {/* Status Change Dropdown */}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

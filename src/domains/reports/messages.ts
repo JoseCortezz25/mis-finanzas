@@ -26,6 +26,13 @@ export const REPORTS_MESSAGES = {
     TRANSACTIONS: 'Movimientos'
   },
 
+  // Transaction labels
+  TRANSACTION: {
+    TYPE_INCOME: 'Ingreso',
+    TYPE_EXPENSE: 'Gasto',
+    NO_DESCRIPTION: 'Sin descripción'
+  },
+
   // Sections
   SECTIONS: {
     EXPENSES_BY_CATEGORY_TITLE: 'Gastos por Categoría',
@@ -41,6 +48,13 @@ export const REPORTS_MESSAGES = {
       'Los 10 movimientos más recientes del período seleccionado'
   },
 
+  // Charts
+  CHART: {
+    EXPENSES_BY_CATEGORY_ARIA_LABEL:
+      'Gráfica de barras de gastos por categoría',
+    OTHERS_CATEGORY: 'Otros'
+  },
+
   // Table columns
   TABLE: {
     DATE: 'Fecha',
@@ -54,7 +68,8 @@ export const REPORTS_MESSAGES = {
     EXPENSE: 'gasto',
     EXPENSES: 'gastos',
     INCOME: 'ingreso',
-    INCOMES: 'ingresos'
+    INCOMES: 'ingresos',
+    ID_PREFIX: 'ID'
   },
 
   // Empty states

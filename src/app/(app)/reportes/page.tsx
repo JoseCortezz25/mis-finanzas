@@ -1,6 +1,13 @@
 'use client';
 
-import { useTransactions, useTransactionStats, useBudgets } from '@/lib/hooks';
+import {
+  useTransactions,
+  useTransactionStats,
+  useBudgets,
+  useCategories
+} from '@/lib/hooks';
+import { REPORTS_MESSAGES } from '@/domains/reports/messages';
+import { ExpensesByCategoryChart } from '@/domains/reports/components/organisms/expenses-by-category-chart';
 import {
   Card,
   CardContent,
@@ -34,8 +41,17 @@ export default function ReportesPage() {
     useTransactions();
   const { isLoading: statsLoading } = useTransactionStats();
   const { isLoading: budgetsLoading } = useBudgets();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
 
-  // Filter transactions by periodd
+  const categoriesById = useMemo(() => {
+    const map = new Map<string, { name: string; color: string }>();
+    for (const category of categories ?? []) {
+      map.set(category.id, { name: category.name, color: category.color });
+    }
+    return map;
+  }, [categories]);
+
+  // Filter transactions by period
   const filteredTransactions = useMemo(() => {
     if (!transactions) return [];
     if (selectedPeriod === 'all') return transactions;
@@ -77,24 +93,24 @@ export default function ReportesPage() {
     };
   }, [filteredTransactions]);
 
-  // Group transactions by category
-  const categoryStats = useMemo(() => {
-    const grouped = filteredTransactions.reduce(
-      (acc, transaction) => {
-        const key = transaction.category_id;
-        if (!acc[key]) {
-          acc[key] = {
-            count: 0,
-            total: 0,
-            type: transaction.type
-          };
-        }
-        acc[key].count++;
-        acc[key].total += transaction.amount;
-        return acc;
-      },
-      {} as Record<string, { count: number; total: number; type: string }>
-    );
+  const expenseCategoryStats = useMemo(() => {
+    const grouped = filteredTransactions
+      .filter(t => t.type === 'expense')
+      .reduce(
+        (acc, transaction) => {
+          const key = transaction.category_id;
+          if (!acc[key]) {
+            acc[key] = {
+              count: 0,
+              total: 0
+            };
+          }
+          acc[key].count++;
+          acc[key].total += transaction.amount;
+          return acc;
+        },
+        {} as Record<string, { count: number; total: number }>
+      );
 
     return Object.entries(grouped)
       .map(([categoryId, data]) => ({
@@ -104,6 +120,63 @@ export default function ReportesPage() {
       .sort((a, b) => b.total - a.total);
   }, [filteredTransactions]);
 
+  const incomeCategoryStats = useMemo(() => {
+    const grouped = filteredTransactions
+      .filter(t => t.type === 'income')
+      .reduce(
+        (acc, transaction) => {
+          const key = transaction.category_id;
+          if (!acc[key]) {
+            acc[key] = {
+              count: 0,
+              total: 0
+            };
+          }
+          acc[key].count++;
+          acc[key].total += transaction.amount;
+          return acc;
+        },
+        {} as Record<string, { count: number; total: number }>
+      );
+
+    return Object.entries(grouped)
+      .map(([categoryId, data]) => ({
+        categoryId,
+        ...data
+      }))
+      .sort((a, b) => b.total - a.total);
+  }, [filteredTransactions]);
+
+  const expensesByCategoryChartData = useMemo(() => {
+    const maxCategories = 6;
+
+    const items = expenseCategoryStats.map(stat => {
+      const category = categoriesById.get(stat.categoryId);
+
+      return {
+        categoryName: category?.name ?? `${stat.categoryId.slice(0, 8)}...`,
+        total: stat.total,
+        color: category?.color
+      };
+    });
+
+    if (items.length <= maxCategories) return items;
+
+    const head = items.slice(0, maxCategories - 1);
+    const tail = items.slice(maxCategories - 1);
+
+    const othersTotal = tail.reduce((sum, item) => sum + item.total, 0);
+    return [
+      ...head,
+      {
+        categoryName: REPORTS_MESSAGES.CHART.OTHERS_CATEGORY,
+        total: othersTotal,
+        color: 'hsl(var(--destructive))',
+        fillOpacity: 0.35
+      }
+    ];
+  }, [categoriesById, expenseCategoryStats]);
+
   // Recent transactions
   const recentTransactions = useMemo(() => {
     return [...filteredTransactions]
@@ -111,10 +184,17 @@ export default function ReportesPage() {
       .slice(0, 10);
   }, [filteredTransactions]);
 
-  if (transactionsLoading || statsLoading || budgetsLoading) {
+  if (
+    transactionsLoading ||
+    statsLoading ||
+    budgetsLoading ||
+    categoriesLoading
+  ) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <p className="text-muted-foreground">Cargando reportes...</p>
+        <p className="text-muted-foreground">
+          {REPORTS_MESSAGES.LOADING.REPORTS}
+        </p>
       </div>
     );
   }
@@ -123,20 +203,26 @@ export default function ReportesPage() {
     <div className="container mx-auto space-y-6 px-6 py-6">
       <div className="flex w-full flex-col items-start justify-between gap-4 sm:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold">Reportes</h1>
+          <h1 className="text-3xl font-bold">{REPORTS_MESSAGES.PAGE.TITLE}</h1>
           <p className="text-muted-foreground">
-            Análisis y estadísticas de tus finanzas
+            {REPORTS_MESSAGES.PAGE.SUBTITLE}
           </p>
         </div>
 
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Selecciona período" />
+            <SelectValue placeholder={REPORTS_MESSAGES.PERIOD.SELECT_PERIOD} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos los tiempos</SelectItem>
-            <SelectItem value="month">Este mes</SelectItem>
-            <SelectItem value="year">Este año</SelectItem>
+            <SelectItem value="all">
+              {REPORTS_MESSAGES.PERIOD.ALL_TIME}
+            </SelectItem>
+            <SelectItem value="month">
+              {REPORTS_MESSAGES.PERIOD.THIS_MONTH}
+            </SelectItem>
+            <SelectItem value="year">
+              {REPORTS_MESSAGES.PERIOD.THIS_YEAR}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -146,7 +232,7 @@ export default function ReportesPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Ingresos
+              {REPORTS_MESSAGES.STATS.TOTAL_INCOME}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -158,7 +244,9 @@ export default function ReportesPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Gastos</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {REPORTS_MESSAGES.STATS.TOTAL_EXPENSES}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
@@ -169,7 +257,9 @@ export default function ReportesPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Balance</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {REPORTS_MESSAGES.STATS.BALANCE}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div
@@ -184,7 +274,9 @@ export default function ReportesPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Movimientos</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {REPORTS_MESSAGES.STATS.TRANSACTIONS}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{periodStats.count}</div>
@@ -196,41 +288,46 @@ export default function ReportesPage() {
         {/* Category breakdown */}
         <Card>
           <CardHeader>
-            <CardTitle>Gastos por Categoría</CardTitle>
+            <CardTitle>
+              {REPORTS_MESSAGES.SECTIONS.EXPENSES_BY_CATEGORY_TITLE}
+            </CardTitle>
             <CardDescription>
-              Distribución de gastos en el período seleccionado
+              {REPORTS_MESSAGES.SECTIONS.EXPENSES_BY_CATEGORY_DESCRIPTION}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {categoryStats.filter(c => c.type === 'expense').length === 0 ? (
+            {expenseCategoryStats.length === 0 ? (
               <p className="text-muted-foreground py-8 text-center">
-                No hay gastos en este período
+                {REPORTS_MESSAGES.EMPTY.NO_EXPENSES}
               </p>
             ) : (
               <div className="space-y-4">
-                {categoryStats
-                  .filter(c => c.type === 'expense')
-                  .map((stat, index) => (
-                    <div
-                      key={stat.categoryId}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">#{index + 1}</span>
-                        <span className="text-muted-foreground text-sm">
-                          ID: {stat.categoryId.slice(0, 8)}...
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          ${stat.total.toLocaleString()}
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          {stat.count} {stat.count === 1 ? 'gasto' : 'gastos'}
-                        </p>
-                      </div>
+                <ExpensesByCategoryChart data={expensesByCategoryChartData} />
+                {expenseCategoryStats.map((stat, index) => (
+                  <div
+                    key={stat.categoryId}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">#{index + 1}</span>
+                      <span className="text-muted-foreground text-sm">
+                        {categoriesById.get(stat.categoryId)?.name ??
+                          `${REPORTS_MESSAGES.CATEGORY.ID_PREFIX}: ${stat.categoryId.slice(0, 8)}...`}
+                      </span>
                     </div>
-                  ))}
+                    <div className="text-right">
+                      <p className="font-medium">
+                        ${stat.total.toLocaleString()}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {stat.count}{' '}
+                        {stat.count === 1
+                          ? REPORTS_MESSAGES.CATEGORY.EXPENSE
+                          : REPORTS_MESSAGES.CATEGORY.EXPENSES}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
@@ -239,42 +336,45 @@ export default function ReportesPage() {
         {/* Income breakdown */}
         <Card>
           <CardHeader>
-            <CardTitle>Ingresos por Categoría</CardTitle>
+            <CardTitle>
+              {REPORTS_MESSAGES.SECTIONS.INCOME_BY_CATEGORY_TITLE}
+            </CardTitle>
             <CardDescription>
-              Distribución de ingresos en el período seleccionado
+              {REPORTS_MESSAGES.SECTIONS.INCOME_BY_CATEGORY_DESCRIPTION}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {categoryStats.filter(c => c.type === 'income').length === 0 ? (
+            {incomeCategoryStats.length === 0 ? (
               <p className="text-muted-foreground py-8 text-center">
-                No hay ingresos en este período
+                {REPORTS_MESSAGES.EMPTY.NO_INCOMES}
               </p>
             ) : (
               <div className="space-y-4">
-                {categoryStats
-                  .filter(c => c.type === 'income')
-                  .map((stat, index) => (
-                    <div
-                      key={stat.categoryId}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">#{index + 1}</span>
-                        <span className="text-muted-foreground text-sm">
-                          ID: {stat.categoryId.slice(0, 8)}...
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          ${stat.total.toLocaleString()}
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          {stat.count}{' '}
-                          {stat.count === 1 ? 'ingreso' : 'ingresos'}
-                        </p>
-                      </div>
+                {incomeCategoryStats.map((stat, index) => (
+                  <div
+                    key={stat.categoryId}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">#{index + 1}</span>
+                      <span className="text-muted-foreground text-sm">
+                        {categoriesById.get(stat.categoryId)?.name ??
+                          `${REPORTS_MESSAGES.CATEGORY.ID_PREFIX}: ${stat.categoryId.slice(0, 8)}...`}
+                      </span>
                     </div>
-                  ))}
+                    <div className="text-right">
+                      <p className="font-medium">
+                        ${stat.total.toLocaleString()}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {stat.count}{' '}
+                        {stat.count === 1
+                          ? REPORTS_MESSAGES.CATEGORY.INCOME
+                          : REPORTS_MESSAGES.CATEGORY.INCOMES}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
@@ -284,24 +384,28 @@ export default function ReportesPage() {
       {/* Recent transactions */}
       <Card>
         <CardHeader>
-          <CardTitle>Movimientos Recientes</CardTitle>
+          <CardTitle>
+            {REPORTS_MESSAGES.SECTIONS.RECENT_TRANSACTIONS_TITLE}
+          </CardTitle>
           <CardDescription>
-            Los 10 movimientos más recientes del período seleccionado
+            {REPORTS_MESSAGES.SECTIONS.RECENT_TRANSACTIONS_DESCRIPTION}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {recentTransactions.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center">
-              No hay movimientos en este período
+              {REPORTS_MESSAGES.EMPTY.NO_TRANSACTIONS}
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Descripción</TableHead>
-                  <TableHead className="text-right">Monto</TableHead>
+                  <TableHead>{REPORTS_MESSAGES.TABLE.DATE}</TableHead>
+                  <TableHead>{REPORTS_MESSAGES.TABLE.TYPE}</TableHead>
+                  <TableHead>{REPORTS_MESSAGES.TABLE.DESCRIPTION}</TableHead>
+                  <TableHead className="text-right">
+                    {REPORTS_MESSAGES.TABLE.AMOUNT}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -320,11 +424,14 @@ export default function ReportesPage() {
                             : 'destructive'
                         }
                       >
-                        {transaction.type === 'income' ? 'Ingreso' : 'Gasto'}
+                        {transaction.type === 'income'
+                          ? REPORTS_MESSAGES.TRANSACTION.TYPE_INCOME
+                          : REPORTS_MESSAGES.TRANSACTION.TYPE_EXPENSE}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {transaction.description || 'Sin descripción'}
+                      {transaction.description ||
+                        REPORTS_MESSAGES.TRANSACTION.NO_DESCRIPTION}
                     </TableCell>
                     <TableCell
                       className={`text-right font-medium ${
