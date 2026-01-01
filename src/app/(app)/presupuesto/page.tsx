@@ -2,7 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { Calendar } from 'lucide-react';
-import { useBudgets, useDeleteBudget } from '@/lib/hooks';
+import {
+  useBudgets,
+  useDeleteBudget,
+  useUpdateBudgetStatus
+} from '@/lib/hooks';
 import {
   Card,
   CardContent,
@@ -19,12 +23,23 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { MoreVertical, CheckCircle2, Circle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageLayout } from '@/components/templates/page-layout';
 import { EmptyState } from '@/components/molecules/empty-state';
 import { DataTableActions } from '@/components/molecules/data-table-actions';
 import { BUDGET_MESSAGES } from '@/domains/budget/messages';
 import { getMonthName } from '@/domains/shared/messages';
+import { BUDGET_CATEGORIES } from '@/domains/budget/constants/categories';
 
 const STATUS_CONFIG = {
   draft: { variant: 'secondary' as const, label: BUDGET_MESSAGES.STATUS.DRAFT },
@@ -36,6 +51,20 @@ export default function PresupuestoPage() {
   const router = useRouter();
   const { data: budgets, isLoading } = useBudgets();
   const deleteBudget = useDeleteBudget();
+  const updateStatus = useUpdateBudgetStatus();
+
+  const handleStatusChange = async (
+    id: string,
+    status: 'draft' | 'active' | 'closed'
+  ) => {
+    const result = await updateStatus.mutateAsync({ id, status });
+
+    if (result.success) {
+      toast.success('Estado actualizado correctamente');
+    } else {
+      toast.error(result.error);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm(BUDGET_MESSAGES.CONFIRMATIONS.DELETE)) return;
@@ -67,16 +96,24 @@ export default function PresupuestoPage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>{BUDGET_MESSAGES.PAGE.LIST_TITLE}</CardTitle>
-            <CardDescription>
-              {BUDGET_MESSAGES.PAGE.LIST_DESCRIPTION}
-            </CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>{BUDGET_MESSAGES.PAGE.LIST_TITLE}</CardTitle>
+                <CardDescription>
+                  {BUDGET_MESSAGES.PAGE.LIST_DESCRIPTION}
+                </CardDescription>
+              </div>
+              <Button onClick={() => router.push('/presupuesto/crear')}>
+                Crear Presupuesto
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>{BUDGET_MESSAGES.TABLE.NAME}</TableHead>
+                  <TableHead>Categoría</TableHead>
                   <TableHead>{BUDGET_MESSAGES.TABLE.PERIOD}</TableHead>
                   <TableHead>{BUDGET_MESSAGES.TABLE.AMOUNT}</TableHead>
                   <TableHead>{BUDGET_MESSAGES.TABLE.STATUS}</TableHead>
@@ -86,30 +123,102 @@ export default function PresupuestoPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {budgets?.map(budget => (
-                  <TableRow key={budget.id}>
-                    <TableCell className="font-medium">{budget.name}</TableCell>
-                    <TableCell>
-                      {getMonthName(budget.month)} {budget.year}
-                    </TableCell>
-                    <TableCell>
-                      ${budget.total_amount.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={STATUS_CONFIG[budget.status].variant}>
-                        {STATUS_CONFIG[budget.status].label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DataTableActions
-                        onEdit={() =>
-                          router.push(`/presupuesto/editar/${budget.id}`)
-                        }
-                        onDelete={() => handleDelete(budget.id)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {budgets?.map(budget => {
+                  const category = budget.category
+                    ? BUDGET_CATEGORIES.find(c => c.id === budget.category)
+                    : null;
+
+                  return (
+                    <TableRow key={budget.id}>
+                      <TableCell className="font-medium">
+                        {budget.name}
+                      </TableCell>
+                      <TableCell>
+                        {category ? (
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`flex h-8 w-8 items-center justify-center rounded-lg ${category.bgColor}`}
+                            >
+                              <category.icon
+                                size={16}
+                                className={category.iconColor}
+                              />
+                            </div>
+                            <span className="text-sm">{category.label}</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-slate-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {budget.month && budget.year
+                          ? `${getMonthName(budget.month)} ${budget.year}`
+                          : '-'}
+                      </TableCell>
+                      <TableCell>
+                        ${budget.total_amount.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={STATUS_CONFIG[budget.status].variant}>
+                          {STATUS_CONFIG[budget.status].label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {/* Status Change Dropdown */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>
+                                Cambiar estado
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusChange(budget.id, 'draft')
+                                }
+                                disabled={budget.status === 'draft'}
+                              >
+                                <Circle className="mr-2 h-4 w-4" />
+                                Borrador
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusChange(budget.id, 'active')
+                                }
+                                disabled={budget.status === 'active'}
+                              >
+                                <CheckCircle2 className="mr-2 h-4 w-4" />
+                                Activar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusChange(budget.id, 'closed')
+                                }
+                                disabled={budget.status === 'closed'}
+                              >
+                                <XCircle className="mr-2 h-4 w-4" />
+                                Cerrar
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+
+                          {/* Edit/Delete Actions */}
+                          <DataTableActions
+                            onEdit={() =>
+                              router.push(`/presupuesto/editar/${budget.id}`)
+                            }
+                            onDelete={() => handleDelete(budget.id)}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </CardContent>

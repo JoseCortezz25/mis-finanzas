@@ -41,6 +41,39 @@
   }
 }
 
+.budget-form__field {
+  @apply space-y-2;
+}
+
+.budget-form__label {
+  @apply block text-sm font-semibold text-slate-700;
+  @apply tracking-tight;
+}
+
+.budget-form__label-hint {
+  @apply ml-2 text-xs font-normal text-slate-500;
+  @apply italic;
+}
+
+.budget-form__input {
+  @apply w-full px-4 py-3 rounded-xl;
+  @apply bg-white border-2 border-slate-200;
+  @apply text-slate-900 placeholder:text-slate-400;
+  @apply font-medium text-base;
+  @apply transition-all duration-200 ease-out;
+  @apply focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300;
+  @apply disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    @apply py-4 text-lg;
+  }
+}
+
+.budget-form__input:hover:not(:disabled) {
+  @apply border-slate-300;
+}
+
 .budget-form__divider {
   @apply h-px bg-slate-100 my-6;
 

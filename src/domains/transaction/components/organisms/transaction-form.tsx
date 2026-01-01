@@ -20,8 +20,15 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useCategories } from '@/lib/hooks';
+import { useCategories, useBudgets } from '@/lib/hooks';
 import { TRANSACTION_MESSAGES } from '@/domains/transaction/messages';
 import { getCategoryColors } from '@/domains/transaction/constants/category-styles';
 import { getIconComponent } from '@/domains/transaction/utils/icon-mapper';
@@ -38,6 +45,7 @@ export function TransactionForm({
   isLoading = false
 }: TransactionFormProps) {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: budgets } = useBudgets();
   const [amountInput, setAmountInput] = useState('0');
 
   const form = useForm<TransactionFormValues>({
@@ -46,6 +54,7 @@ export function TransactionForm({
       type: 'expense',
       amount: 0,
       category_id: '',
+      budget_id: null,
       date: new Date().toISOString().split('T')[0],
       description: '',
       notes: '',
@@ -205,6 +214,41 @@ export function TransactionForm({
                   )}
                 </div>
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Budget Selection Field */}
+        <FormField
+          control={form.control}
+          name="budget_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-base">
+                Presupuesto (opcional)
+              </FormLabel>
+              <Select
+                onValueChange={value =>
+                  field.onChange(value === 'none' ? null : value)
+                }
+                value={field.value || 'none'}
+                disabled={isLoading}
+              >
+                <FormControl>
+                  <SelectTrigger className="h-12 rounded-2xl border-2">
+                    <SelectValue placeholder="Selecciona un presupuesto" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="none">Sin presupuesto</SelectItem>
+                  {budgets?.map(budget => (
+                    <SelectItem key={budget.id} value={budget.id}>
+                      {budget.name} - ${budget.total_amount.toLocaleString()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

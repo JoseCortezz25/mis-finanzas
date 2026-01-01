@@ -19,6 +19,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -62,10 +63,17 @@ export default function MovimientosPage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>{TRANSACTION_MESSAGES.PAGE.LIST_TITLE}</CardTitle>
-            <CardDescription>
-              {TRANSACTION_MESSAGES.PAGE.LIST_DESCRIPTION}
-            </CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>{TRANSACTION_MESSAGES.PAGE.LIST_TITLE}</CardTitle>
+                <CardDescription>
+                  {TRANSACTION_MESSAGES.PAGE.LIST_DESCRIPTION}
+                </CardDescription>
+              </div>
+              <Button onClick={() => router.push('/movimientos/crear')}>
+                Crear Movimiento
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>

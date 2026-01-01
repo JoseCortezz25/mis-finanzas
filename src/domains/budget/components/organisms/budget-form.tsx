@@ -24,11 +24,8 @@ export function BudgetForm({
   onClose,
   showCloseButton = false
 }: BudgetFormProps) {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
-
   const {
+    register,
     setValue,
     watch,
     handleSubmit,
@@ -37,22 +34,17 @@ export function BudgetForm({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: defaultValues || {
       name: '',
-      category: '',
-      total_amount: 0,
-      month: currentMonth,
-      year: currentYear
+      category: null,
+      total_amount: 0
     }
   });
 
+  const name = watch('name');
   const category = watch('category');
   const totalAmount = watch('total_amount');
 
   const handleCategoryChange = (categoryId: string) => {
-    setValue('category', categoryId, { shouldValidate: true });
-    // Auto-generate name based on category
-    const categoryLabel =
-      categoryId.charAt(0).toUpperCase() + categoryId.slice(1);
-    setValue('name', `Presupuesto ${categoryLabel}`);
+    setValue('category', categoryId || null, { shouldValidate: true });
   };
 
   const handleAmountChange = (amount: number) => {
@@ -76,17 +68,45 @@ export function BudgetForm({
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="budget-form__content">
-        <CategorySelector
-          value={category}
-          onChange={handleCategoryChange}
-          disabled={isLoading}
-        />
-        {errors.category && (
-          <p className="budget-form__error">{errors.category.message}</p>
-        )}
+        {/* Budget Name Input */}
+        <div className="budget-form__field">
+          <label htmlFor="name" className="budget-form__label">
+            Nombre del presupuesto
+          </label>
+          <input
+            id="name"
+            type="text"
+            placeholder="Ej: Servicios Públicos, Viaje a Cartagena, Mercado del Mes"
+            className="budget-form__input"
+            disabled={isLoading}
+            {...register('name')}
+          />
+          {errors.name && (
+            <p className="budget-form__error">{errors.name.message}</p>
+          )}
+        </div>
+
+        {/* Category Selector (Optional) */}
+        <div className="budget-form__field">
+          <label className="budget-form__label">
+            Categoría (opcional)
+            <span className="budget-form__label-hint">
+              Solo para identificar visualmente
+            </span>
+          </label>
+          <CategorySelector
+            value={category || ''}
+            onChange={handleCategoryChange}
+            disabled={isLoading}
+          />
+          {errors.category && (
+            <p className="budget-form__error">{errors.category.message}</p>
+          )}
+        </div>
 
         <div className="budget-form__divider" />
 
+        {/* Amount Input */}
         <CurrencyInput
           value={totalAmount}
           onChange={handleAmountChange}
@@ -98,10 +118,10 @@ export function BudgetForm({
 
         <Button
           type="submit"
-          disabled={isLoading || !category || totalAmount === 0}
+          disabled={isLoading || !name || totalAmount === 0}
           className={cn(
             'budget-form__submit',
-            (!category || totalAmount === 0) && 'budget-form__submit--disabled'
+            (!name || totalAmount === 0) && 'budget-form__submit--disabled'
           )}
         >
           {isLoading ? 'Creando...' : 'Crear presupuesto'}

@@ -134,22 +134,29 @@ export default function RegisterPage() {
               {/* Error general */}
               {error && (
                 <div className="register-form__error animate-slide-down">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    className="register-form__error-icon"
+                  >
                     <circle
-                      cx="8"
-                      cy="8"
-                      r="7"
-                      stroke="currentColor"
+                      cx="9"
+                      cy="9"
+                      r="8"
+                      fill="#FFF5F5"
+                      stroke="#FF7675"
                       strokeWidth="1.5"
                     />
                     <path
-                      d="M8 4v5M8 11v1"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
+                      d="M9 5v5M9 12v.5"
+                      stroke="#FF7675"
+                      strokeWidth="1.8"
                       strokeLinecap="round"
                     />
                   </svg>
-                  <span>{error}</span>
+                  <span className="register-form__error-text">{error}</span>
                 </div>
               )}
 
@@ -298,23 +305,29 @@ export default function RegisterPage() {
           gap: var(--space-4);
         }
 
-        /* Error global - Más compacto */
+        /* Error global - Mejorado */
         .register-form__error {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: var(--space-2);
-          padding: var(--space-2) var(--space-3);
-          background: rgba(255, 118, 117, 0.08);
-          border: 1px solid var(--zen-error);
-          border-radius: var(--radius-md);
+          padding: var(--space-3);
+          background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+          border: 1.5px solid #ffb8b8;
+          border-radius: var(--radius-lg);
           font-family: var(--font-body);
-          font-size: var(--text-sm);
-          color: var(--zen-error);
-          font-weight: var(--font-medium);
+          box-shadow: 0 2px 8px rgba(255, 118, 117, 0.1);
         }
 
-        .register-form__error svg {
+        .register-form__error-icon {
           flex-shrink: 0;
+          margin-top: 1px;
+        }
+
+        .register-form__error-text {
+          color: #e63946;
+          font-size: var(--text-sm);
+          font-weight: var(--font-medium);
+          line-height: 1.5;
         }
 
         /* Términos - Más compacto */
