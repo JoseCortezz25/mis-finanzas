@@ -25,13 +25,24 @@ export class CategoryRepository extends SupabaseRepository<
    * @returns Array of default categories
    */
   async findDefault(): Promise<Category[]> {
+    console.log(
+      '[CATEGORY-REPO] findDefault - Obteniendo categorias por defecto'
+    );
     const { data, error } = await this.supabase
       .from('categories')
       .select('*')
       .eq('is_custom', false)
       .order('name', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[CATEGORY-REPO] findDefault - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[CATEGORY-REPO] findDefault - Exito:',
+      data?.length || 0,
+      'categorias'
+    );
     return data || [];
   }
 
@@ -41,6 +52,10 @@ export class CategoryRepository extends SupabaseRepository<
    * @returns Array of custom categories
    */
   async findCustom(userId: string): Promise<Category[]> {
+    console.log(
+      '[CATEGORY-REPO] findCustom - Obteniendo categorias personalizadas:',
+      userId
+    );
     const { data, error } = await this.supabase
       .from('categories')
       .select('*')
@@ -48,7 +63,15 @@ export class CategoryRepository extends SupabaseRepository<
       .eq('is_custom', true)
       .order('name', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[CATEGORY-REPO] findCustom - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[CATEGORY-REPO] findCustom - Exito:',
+      data?.length || 0,
+      'categorias'
+    );
     return data || [];
   }
 
@@ -58,6 +81,10 @@ export class CategoryRepository extends SupabaseRepository<
    * @returns Array of categories
    */
   async findAvailable(userId: string): Promise<Category[]> {
+    console.log(
+      '[CATEGORY-REPO] findAvailable - Obteniendo categorias disponibles:',
+      userId
+    );
     const { data, error } = await this.supabase
       .from('categories')
       .select('*')
@@ -65,7 +92,15 @@ export class CategoryRepository extends SupabaseRepository<
       .order('is_custom', { ascending: true })
       .order('name', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[CATEGORY-REPO] findAvailable - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[CATEGORY-REPO] findAvailable - Exito:',
+      data?.length || 0,
+      'categorias'
+    );
     return data || [];
   }
 
@@ -76,6 +111,10 @@ export class CategoryRepository extends SupabaseRepository<
    * @returns Category or null
    */
   async findByName(name: string, userId?: string): Promise<Category | null> {
+    console.log('[CATEGORY-REPO] findByName - Buscando categoria:', {
+      name,
+      userId
+    });
     let query = this.supabase.from('categories').select('*').eq('name', name);
 
     if (userId) {
@@ -87,10 +126,15 @@ export class CategoryRepository extends SupabaseRepository<
     const { data, error } = await query.single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null; // Not found
+      if (error.code === 'PGRST116') {
+        console.log('[CATEGORY-REPO] findByName - No encontrada');
+        return null;
+      }
+      console.error('[CATEGORY-REPO] findByName - Error:', error);
       throw error;
     }
 
+    console.log('[CATEGORY-REPO] findByName - Exito:', data);
     return data;
   }
 
@@ -115,15 +159,19 @@ export class CategoryRepository extends SupabaseRepository<
     custom: number;
     default: number;
   }> {
+    console.log('[CATEGORY-REPO] getStats - Obteniendo estadisticas:', userId);
     const [custom, defaultCategories] = await Promise.all([
       this.findCustom(userId),
       this.findDefault()
     ]);
 
-    return {
+    const stats = {
       total: custom.length + defaultCategories.length,
       custom: custom.length,
       default: defaultCategories.length
     };
+
+    console.log('[CATEGORY-REPO] getStats - Exito:', stats);
+    return stats;
   }
 }

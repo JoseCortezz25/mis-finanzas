@@ -25,6 +25,10 @@ export abstract class SupabaseRepository<
    * @returns Array of records
    */
   async findAll(userId: string): Promise<T[]> {
+    console.log(
+      `[REPO-BASE] findAll - Obteniendo todos los registros de ${String(this.tableName)}:`,
+      userId
+    );
     const { data, error } = await this.supabase
       .from(this.tableName)
       .select('*')
@@ -32,7 +36,18 @@ export abstract class SupabaseRepository<
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error(
+        `[REPO-BASE] findAll - Error en ${String(this.tableName)}:`,
+        error
+      );
+      throw error;
+    }
+    console.log(
+      `[REPO-BASE] findAll - Exito en ${String(this.tableName)}:`,
+      data?.length || 0,
+      'registros'
+    );
     return (data as T[]) || [];
   }
 
@@ -43,6 +58,10 @@ export abstract class SupabaseRepository<
    * @returns Record or null if not found
    */
   async findById(id: string, userId: string): Promise<T | null> {
+    console.log(
+      `[REPO-BASE] findById - Buscando en ${String(this.tableName)}:`,
+      { id, userId }
+    );
     const { data, error } = await this.supabase
       .from(this.tableName)
       .select('*')
@@ -53,10 +72,23 @@ export abstract class SupabaseRepository<
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null; // Not found
+      if (error.code === 'PGRST116') {
+        console.log(
+          `[REPO-BASE] findById - No encontrado en ${String(this.tableName)}`
+        );
+        return null;
+      }
+      console.error(
+        `[REPO-BASE] findById - Error en ${String(this.tableName)}:`,
+        error
+      );
       throw error;
     }
 
+    console.log(
+      `[REPO-BASE] findById - Exito en ${String(this.tableName)}:`,
+      data
+    );
     return data as T;
   }
 
@@ -67,6 +99,10 @@ export abstract class SupabaseRepository<
    * @returns Created record
    */
   async create(data: Partial<T>, userId: string): Promise<T> {
+    console.log(`[REPO-BASE] create - Creando en ${String(this.tableName)}:`, {
+      data,
+      userId
+    });
     const { data: created, error } = await this.supabase
       .from(this.tableName)
       // @ts-expect-error - Generic type limitation with Supabase
@@ -74,7 +110,17 @@ export abstract class SupabaseRepository<
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error(
+        `[REPO-BASE] create - Error en ${String(this.tableName)}:`,
+        error
+      );
+      throw error;
+    }
+    console.log(
+      `[REPO-BASE] create - Exito en ${String(this.tableName)}:`,
+      created
+    );
     return created as T;
   }
 
@@ -86,6 +132,10 @@ export abstract class SupabaseRepository<
    * @returns Updated record
    */
   async update(id: string, data: Partial<T>, userId: string): Promise<T> {
+    console.log(
+      `[REPO-BASE] update - Actualizando en ${String(this.tableName)}:`,
+      { id, data, userId }
+    );
     const { data: updated, error } = await this.supabase
       .from(this.tableName)
       // @ts-expect-error - Generic type limitation with Supabase
@@ -97,7 +147,17 @@ export abstract class SupabaseRepository<
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error(
+        `[REPO-BASE] update - Error en ${String(this.tableName)}:`,
+        error
+      );
+      throw error;
+    }
+    console.log(
+      `[REPO-BASE] update - Exito en ${String(this.tableName)}:`,
+      updated
+    );
     return updated as T;
   }
 
@@ -107,6 +167,10 @@ export abstract class SupabaseRepository<
    * @param userId - User ID for security check
    */
   async delete(id: string, userId: string): Promise<void> {
+    console.log(
+      `[REPO-BASE] delete - Eliminando en ${String(this.tableName)}:`,
+      { id, userId }
+    );
     const { error } = await this.supabase
       .from(this.tableName)
       .delete()
@@ -115,7 +179,14 @@ export abstract class SupabaseRepository<
       // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId);
 
-    if (error) throw error;
+    if (error) {
+      console.error(
+        `[REPO-BASE] delete - Error en ${String(this.tableName)}:`,
+        error
+      );
+      throw error;
+    }
+    console.log(`[REPO-BASE] delete - Exito en ${String(this.tableName)}`);
   }
 
   /**
@@ -124,13 +195,27 @@ export abstract class SupabaseRepository<
    * @returns Number of records
    */
   async count(userId: string): Promise<number> {
+    console.log(
+      `[REPO-BASE] count - Contando en ${String(this.tableName)}:`,
+      userId
+    );
     const { count, error } = await this.supabase
       .from(this.tableName)
       .select('*', { count: 'exact', head: true })
       // @ts-expect-error - Generic type limitation with Supabase
       .eq('user_id', userId);
 
-    if (error) throw error;
+    if (error) {
+      console.error(
+        `[REPO-BASE] count - Error en ${String(this.tableName)}:`,
+        error
+      );
+      throw error;
+    }
+    console.log(
+      `[REPO-BASE] count - Exito en ${String(this.tableName)}:`,
+      count || 0
+    );
     return count || 0;
   }
 }

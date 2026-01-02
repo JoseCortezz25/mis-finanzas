@@ -27,6 +27,10 @@ export class TransactionRepository extends SupabaseRepository<
    * @returns Array of transactions
    */
   async findByBudget(budgetId: string, userId: string): Promise<Transaction[]> {
+    console.log(
+      '[TRANSACTION-REPO] findByBudget - Buscando transacciones por presupuesto:',
+      { budgetId, userId }
+    );
     const { data, error } = await this.supabase
       .from('transactions')
       .select('*')
@@ -34,7 +38,15 @@ export class TransactionRepository extends SupabaseRepository<
       .eq('user_id', userId)
       .order('date', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[TRANSACTION-REPO] findByBudget - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[TRANSACTION-REPO] findByBudget - Exito:',
+      data?.length || 0,
+      'transacciones'
+    );
     return data || [];
   }
 
@@ -48,6 +60,10 @@ export class TransactionRepository extends SupabaseRepository<
     categoryId: string,
     userId: string
   ): Promise<Transaction[]> {
+    console.log(
+      '[TRANSACTION-REPO] findByCategory - Buscando transacciones por categoria:',
+      { categoryId, userId }
+    );
     const { data, error } = await this.supabase
       .from('transactions')
       .select('*')
@@ -55,7 +71,15 @@ export class TransactionRepository extends SupabaseRepository<
       .eq('user_id', userId)
       .order('date', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[TRANSACTION-REPO] findByCategory - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[TRANSACTION-REPO] findByCategory - Exito:',
+      data?.length || 0,
+      'transacciones'
+    );
     return data || [];
   }
 
@@ -71,6 +95,10 @@ export class TransactionRepository extends SupabaseRepository<
     startDate: string,
     endDate: string
   ): Promise<Transaction[]> {
+    console.log(
+      '[TRANSACTION-REPO] findByDateRange - Buscando transacciones por rango de fechas:',
+      { userId, startDate, endDate }
+    );
     const { data, error } = await this.supabase
       .from('transactions')
       .select('*')
@@ -79,7 +107,15 @@ export class TransactionRepository extends SupabaseRepository<
       .lte('date', endDate)
       .order('date', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[TRANSACTION-REPO] findByDateRange - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[TRANSACTION-REPO] findByDateRange - Exito:',
+      data?.length || 0,
+      'transacciones'
+    );
     return data || [];
   }
 
@@ -93,6 +129,10 @@ export class TransactionRepository extends SupabaseRepository<
     userId: string,
     type: 'income' | 'expense'
   ): Promise<Transaction[]> {
+    console.log(
+      '[TRANSACTION-REPO] findByType - Buscando transacciones por tipo:',
+      { userId, type }
+    );
     const { data, error } = await this.supabase
       .from('transactions')
       .select('*')
@@ -100,7 +140,15 @@ export class TransactionRepository extends SupabaseRepository<
       .eq('type', type)
       .order('date', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[TRANSACTION-REPO] findByType - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[TRANSACTION-REPO] findByType - Exito:',
+      data?.length || 0,
+      'transacciones'
+    );
     return data || [];
   }
 
@@ -116,6 +164,10 @@ export class TransactionRepository extends SupabaseRepository<
     startDate?: string,
     endDate?: string
   ): Promise<number> {
+    console.log(
+      '[TRANSACTION-REPO] getTotalIncome - Obteniendo total de ingresos:',
+      { userId, startDate, endDate }
+    );
     let query = this.supabase
       .from('transactions')
       .select('amount')
@@ -127,10 +179,15 @@ export class TransactionRepository extends SupabaseRepository<
 
     const { data, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('[TRANSACTION-REPO] getTotalIncome - Error:', error);
+      throw error;
+    }
 
     const transactions = (data || []) as Array<{ amount: number }>;
-    return transactions.reduce((sum, t) => sum + t.amount, 0);
+    const total = transactions.reduce((sum, t) => sum + t.amount, 0);
+    console.log('[TRANSACTION-REPO] getTotalIncome - Exito:', total);
+    return total;
   }
 
   /**
@@ -145,6 +202,10 @@ export class TransactionRepository extends SupabaseRepository<
     startDate?: string,
     endDate?: string
   ): Promise<number> {
+    console.log(
+      '[TRANSACTION-REPO] getTotalExpenses - Obteniendo total de gastos:',
+      { userId, startDate, endDate }
+    );
     let query = this.supabase
       .from('transactions')
       .select('amount')
@@ -156,10 +217,15 @@ export class TransactionRepository extends SupabaseRepository<
 
     const { data, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('[TRANSACTION-REPO] getTotalExpenses - Error:', error);
+      throw error;
+    }
 
     const transactions = (data || []) as Array<{ amount: number }>;
-    return transactions.reduce((sum, t) => sum + t.amount, 0);
+    const total = transactions.reduce((sum, t) => sum + t.amount, 0);
+    console.log('[TRANSACTION-REPO] getTotalExpenses - Exito:', total);
+    return total;
   }
 
   /**
@@ -173,17 +239,24 @@ export class TransactionRepository extends SupabaseRepository<
     balance: number;
     count: number;
   }> {
+    console.log(
+      '[TRANSACTION-REPO] getStats - Obteniendo estadisticas:',
+      userId
+    );
     const [income, expenses, count] = await Promise.all([
       this.getTotalIncome(userId),
       this.getTotalExpenses(userId),
       this.count(userId)
     ]);
 
-    return {
+    const stats = {
       totalIncome: income,
       totalExpenses: expenses,
       balance: income - expenses,
       count
     };
+
+    console.log('[TRANSACTION-REPO] getStats - Exito:', stats);
+    return stats;
   }
 }

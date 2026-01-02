@@ -37,13 +37,20 @@ export function useTransactions() {
   return useQuery({
     queryKey: transactionKeys.all,
     queryFn: async () => {
+      console.log('[TRANSACTIONS] useTransactions - Obteniendo transacciones');
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new TransactionRepository(supabase);
-      return repository.findAll(user.id);
+      const result = await repository.findAll(user.id);
+      console.log(
+        '[TRANSACTIONS] useTransactions - Exito:',
+        result.length,
+        'transacciones'
+      );
+      return result;
     }
   });
 }
@@ -57,13 +64,19 @@ export function useTransaction(id: string) {
   return useQuery({
     queryKey: transactionKeys.detail(id),
     queryFn: async () => {
+      console.log(
+        '[TRANSACTIONS] useTransaction - Obteniendo transaccion:',
+        id
+      );
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new TransactionRepository(supabase);
-      return repository.findById(id, user.id);
+      const result = await repository.findById(id, user.id);
+      console.log('[TRANSACTIONS] useTransaction - Exito:', result);
+      return result;
     },
     enabled: !!id
   });
@@ -78,13 +91,23 @@ export function useTransactionsByBudget(budgetId: string) {
   return useQuery({
     queryKey: transactionKeys.byBudget(budgetId),
     queryFn: async () => {
+      console.log(
+        '[TRANSACTIONS] useTransactionsByBudget - Obteniendo transacciones por presupuesto:',
+        budgetId
+      );
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new TransactionRepository(supabase);
-      return repository.findByBudget(budgetId, user.id);
+      const result = await repository.findByBudget(budgetId, user.id);
+      console.log(
+        '[TRANSACTIONS] useTransactionsByBudget - Exito:',
+        result.length,
+        'transacciones'
+      );
+      return result;
     },
     enabled: !!budgetId
   });
@@ -99,13 +122,23 @@ export function useTransactionsByCategory(categoryId: string) {
   return useQuery({
     queryKey: transactionKeys.byCategory(categoryId),
     queryFn: async () => {
+      console.log(
+        '[TRANSACTIONS] useTransactionsByCategory - Obteniendo transacciones por categoria:',
+        categoryId
+      );
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new TransactionRepository(supabase);
-      return repository.findByCategory(categoryId, user.id);
+      const result = await repository.findByCategory(categoryId, user.id);
+      console.log(
+        '[TRANSACTIONS] useTransactionsByCategory - Exito:',
+        result.length,
+        'transacciones'
+      );
+      return result;
     },
     enabled: !!categoryId
   });
@@ -120,13 +153,23 @@ export function useTransactionsByType(type: 'income' | 'expense') {
   return useQuery({
     queryKey: transactionKeys.byType(type),
     queryFn: async () => {
+      console.log(
+        '[TRANSACTIONS] useTransactionsByType - Obteniendo transacciones por tipo:',
+        type
+      );
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new TransactionRepository(supabase);
-      return repository.findByType(user.id, type);
+      const result = await repository.findByType(user.id, type);
+      console.log(
+        '[TRANSACTIONS] useTransactionsByType - Exito:',
+        result.length,
+        'transacciones'
+      );
+      return result;
     }
   });
 }
@@ -140,13 +183,18 @@ export function useTransactionStats() {
   return useQuery({
     queryKey: [...transactionKeys.all, 'stats'],
     queryFn: async () => {
+      console.log(
+        '[TRANSACTIONS] useTransactionStats - Obteniendo estadisticas'
+      );
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new TransactionRepository(supabase);
-      return repository.getStats(user.id);
+      const result = await repository.getStats(user.id);
+      console.log('[TRANSACTIONS] useTransactionStats - Exito:', result);
+      return result;
     }
   });
 }
@@ -160,6 +208,9 @@ export function useCreateTransaction() {
   return useMutation({
     mutationFn: createTransaction,
     onSuccess: () => {
+      console.log(
+        '[TRANSACTIONS] useCreateTransaction - Transaccion creada exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: transactionKeys.all });
     }
   });
@@ -175,6 +226,9 @@ export function useUpdateTransaction() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Transaction> }) =>
       updateTransaction(id, data),
     onSuccess: () => {
+      console.log(
+        '[TRANSACTIONS] useUpdateTransaction - Transaccion actualizada exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: transactionKeys.all });
     }
   });
@@ -189,6 +243,9 @@ export function useDeleteTransaction() {
   return useMutation({
     mutationFn: deleteTransaction,
     onSuccess: () => {
+      console.log(
+        '[TRANSACTIONS] useDeleteTransaction - Transaccion eliminada exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: transactionKeys.all });
     }
   });

@@ -34,13 +34,20 @@ export function useBudgets() {
   return useQuery({
     queryKey: budgetKeys.all,
     queryFn: async () => {
+      console.log('[BUDGETS] useBudgets - Obteniendo presupuestos');
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      return repository.findAll(user.id);
+      const result = await repository.findAll(user.id);
+      console.log(
+        '[BUDGETS] useBudgets - Exito:',
+        result.length,
+        'presupuestos'
+      );
+      return result;
     }
   });
 }
@@ -54,13 +61,16 @@ export function useBudget(id: string) {
   return useQuery({
     queryKey: budgetKeys.detail(id),
     queryFn: async () => {
+      console.log('[BUDGETS] useBudget - Obteniendo presupuesto:', id);
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      return repository.findById(id, user.id);
+      const result = await repository.findById(id, user.id);
+      console.log('[BUDGETS] useBudget - Exito:', result);
+      return result;
     },
     enabled: !!id
   });
@@ -75,13 +85,16 @@ export function useCurrentBudget() {
   return useQuery({
     queryKey: budgetKeys.all,
     queryFn: async () => {
+      console.log('[BUDGETS] useCurrentBudget - Obteniendo presupuesto actual');
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      return repository.findCurrent(user.id);
+      const result = await repository.findCurrent(user.id);
+      console.log('[BUDGETS] useCurrentBudget - Exito:', result);
+      return result;
     },
     select: data => data
   });
@@ -96,13 +109,22 @@ export function useActiveBudgets() {
   return useQuery({
     queryKey: budgetKeys.all,
     queryFn: async () => {
+      console.log(
+        '[BUDGETS] useActiveBudgets - Obteniendo presupuestos activos'
+      );
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      return repository.findActive(user.id);
+      const result = await repository.findActive(user.id);
+      console.log(
+        '[BUDGETS] useActiveBudgets - Exito:',
+        result.length,
+        'presupuestos'
+      );
+      return result;
     }
   });
 }
@@ -116,6 +138,9 @@ export function useCreateBudget() {
   return useMutation({
     mutationFn: createBudget,
     onSuccess: () => {
+      console.log(
+        '[BUDGETS] useCreateBudget - Presupuesto creado exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });
     }
   });
@@ -131,6 +156,9 @@ export function useUpdateBudget() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Budget> }) =>
       updateBudget(id, data),
     onSuccess: () => {
+      console.log(
+        '[BUDGETS] useUpdateBudget - Presupuesto actualizado exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });
     }
   });
@@ -145,6 +173,9 @@ export function useDeleteBudget() {
   return useMutation({
     mutationFn: deleteBudget,
     onSuccess: () => {
+      console.log(
+        '[BUDGETS] useDeleteBudget - Presupuesto eliminado exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });
     }
   });
@@ -165,6 +196,9 @@ export function useUpdateBudgetStatus() {
       status: 'draft' | 'active' | 'closed';
     }) => updateBudgetStatus(id, status),
     onSuccess: () => {
+      console.log(
+        '[BUDGETS] useUpdateBudgetStatus - Estado actualizado exitosamente'
+      );
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });
     }
   });

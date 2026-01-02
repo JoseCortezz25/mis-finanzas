@@ -125,7 +125,7 @@ export function ChangePasswordForm() {
         </CardContent>
       </Card>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>{USER_MESSAGES.PASSWORD.HEADING}</DialogTitle>
           <DialogDescription>
@@ -133,7 +133,10 @@ export function ChangePasswordForm() {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 overflow-x-hidden"
+        >
           {/* Warning */}
           <Alert>
             <AlertTriangle className="h-4 w-4" />

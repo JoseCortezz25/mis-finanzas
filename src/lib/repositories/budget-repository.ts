@@ -27,6 +27,11 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
     month: number,
     year: number
   ): Promise<Budget | null> {
+    console.log('[BUDGET-REPO] findByMonthYear - Buscando:', {
+      userId,
+      month,
+      year
+    });
     const { data, error } = await this.supabase
       .from('budgets')
       .select('*')
@@ -36,10 +41,15 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null; // Not found
+      if (error.code === 'PGRST116') {
+        console.log('[BUDGET-REPO] findByMonthYear - No encontrado');
+        return null;
+      }
+      console.error('[BUDGET-REPO] findByMonthYear - Error:', error);
       throw error;
     }
 
+    console.log('[BUDGET-REPO] findByMonthYear - Exito:', data);
     return data;
   }
 
@@ -49,6 +59,10 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
    * @returns Array of active budgets
    */
   async findActive(userId: string): Promise<Budget[]> {
+    console.log(
+      '[BUDGET-REPO] findActive - Buscando presupuestos activos:',
+      userId
+    );
     const { data, error } = await this.supabase
       .from('budgets')
       .select('*')
@@ -57,7 +71,15 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
       .order('year', { ascending: false })
       .order('month', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[BUDGET-REPO] findActive - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[BUDGET-REPO] findActive - Exito:',
+      data?.length || 0,
+      'presupuestos'
+    );
     return data || [];
   }
 
@@ -68,6 +90,10 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
    * @returns Array of budgets
    */
   async findByYear(userId: string, year: number): Promise<Budget[]> {
+    console.log('[BUDGET-REPO] findByYear - Buscando presupuestos por año:', {
+      userId,
+      year
+    });
     const { data, error } = await this.supabase
       .from('budgets')
       .select('*')
@@ -75,7 +101,15 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
       .eq('year', year)
       .order('month', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[BUDGET-REPO] findByYear - Error:', error);
+      throw error;
+    }
+    console.log(
+      '[BUDGET-REPO] findByYear - Exito:',
+      data?.length || 0,
+      'presupuestos'
+    );
     return data || [];
   }
 
@@ -118,12 +152,16 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
     draft: number;
     closed: number;
   }> {
+    console.log('[BUDGET-REPO] getStats - Obteniendo estadisticas:', userId);
     const { data, error } = await this.supabase
       .from('budgets')
       .select('status')
       .eq('user_id', userId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('[BUDGET-REPO] getStats - Error:', error);
+      throw error;
+    }
 
     const budgets = (data || []) as Array<{
       status: 'draft' | 'active' | 'closed';
@@ -136,6 +174,7 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
       closed: budgets.filter(b => b.status === 'closed').length
     };
 
+    console.log('[BUDGET-REPO] getStats - Exito:', stats);
     return stats;
   }
 }
