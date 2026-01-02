@@ -7,7 +7,8 @@ import {
   LogOut,
   LayoutDashboard,
   Receipt,
-  BarChart3
+  BarChart3,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -71,6 +72,20 @@ export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
               {userEmail}
             </span>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className={cn(
+              'h-9 gap-2 md:h-10',
+              pathname === '/perfil' && 'bg-primary/10 text-primary'
+            )}
+          >
+            <Link href="/perfil">
+              <User className="h-4 w-4" />
+              <span className="hidden md:inline">Perfil</span>
+            </Link>
+          </Button>
           <Button
             variant="ghost"
             size="sm"
