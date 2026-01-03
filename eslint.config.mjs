@@ -39,6 +39,10 @@ const eslintConfig = [
             '_pending_sync',
             'user_id',
             'required_error',
+            'spent_amount',
+            'percentage_used',
+            'health_status',
+            'available_amount',
           ]
         }
       ],

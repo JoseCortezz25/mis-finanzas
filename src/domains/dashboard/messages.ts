@@ -48,5 +48,51 @@ export const DASHBOARD_MESSAGES = {
     DEFAULT: 'Cargando...',
     STATS: 'Cargando estadísticas...',
     BUDGETS: 'Cargando presupuestos...'
+  },
+
+  // Active Budgets Card Component
+  ACTIVE_BUDGETS: {
+    TITLE: 'Presupuestos Activos',
+    SUBTITLE: 'Monitorea el progreso de tus presupuestos',
+    SPENT_LABEL: 'Gastado',
+    OF_LABEL: 'de',
+    REMAINING_LABEL: 'Disponible',
+    PROGRESS_LABEL: 'Progreso',
+    VIEW_DETAILS: 'Ver detalles',
+    VIEW_ALL: 'Ver todos los presupuestos',
+
+    // Health status labels
+    HEALTH: {
+      HEALTHY: 'Saludable',
+      WARNING: 'Precaución',
+      ALERT: 'Alerta',
+      DANGER: 'Excedido'
+    },
+
+    // Tooltips
+    TOOLTIP: {
+      PROGRESS: 'Porcentaje de presupuesto consumido',
+      HEALTH: 'Estado de salud del presupuesto',
+      CARD: 'Haz clic para ver los detalles del presupuesto'
+    },
+
+    // Empty states
+    EMPTY: {
+      TITLE: 'No hay presupuestos activos',
+      DESCRIPTION:
+        'Crea tu primer presupuesto para comenzar a monitorear tus finanzas',
+      CTA: 'Crear presupuesto'
+    },
+
+    // Error states
+    ERROR: {
+      TITLE: 'Error al cargar presupuestos',
+      DESCRIPTION:
+        'No pudimos cargar tus presupuestos. Por favor, intenta de nuevo.',
+      CTA: 'Reintentar'
+    },
+
+    // Loading accessible text
+    LOADING_ACCESSIBLE: 'Cargando presupuestos activos'
   }
 } as const;

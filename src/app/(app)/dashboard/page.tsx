@@ -10,17 +10,18 @@ import {
 } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Wallet, Calendar } from 'lucide-react';
 import { DASHBOARD_MESSAGES } from '@/domains/dashboard/messages';
+import { ActiveBudgetsSection } from '@/domains/dashboard/components/active-budgets-section';
 
 export default function DashboardPage() {
   const { data: budgets, isLoading: budgetsLoading } = useBudgets();
   const { data: stats, isLoading: statsLoading } = useTransactionStats();
 
-  const activeBudgets = budgets?.filter(b => b.status === 'active') || [];
+  // Current budget for stats card
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const currentBudget = activeBudgets.find(
-    b => b.month === currentMonth && b.year === currentYear
-  );
+  const currentBudget = budgets
+    ?.filter(b => b.status === 'active')
+    .find(b => b.month === currentMonth && b.year === currentYear);
 
   return (
     <div className="container mx-auto space-y-6 px-6 py-6">
@@ -112,50 +113,11 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {DASHBOARD_MESSAGES.SECTIONS.ACTIVE_BUDGETS_TITLE}
-            </CardTitle>
-            <CardDescription>
-              {DASHBOARD_MESSAGES.SECTIONS.ACTIVE_BUDGETS_DESCRIPTION}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {budgetsLoading ? (
-              <p className="text-muted-foreground">
-                {DASHBOARD_MESSAGES.LOADING.BUDGETS}
-              </p>
-            ) : activeBudgets.length === 0 ? (
-              <p className="text-muted-foreground">
-                {DASHBOARD_MESSAGES.EMPTY.NO_ACTIVE_BUDGETS}
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {activeBudgets.slice(0, 5).map(budget => (
-                  <div
-                    key={budget.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div>
-                      <p className="font-medium">{budget.name}</p>
-                      <p className="text-muted-foreground text-sm">
-                        {budget.month}/{budget.year}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">
-                        ${budget.total_amount.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Active Budgets Section - New distinctive design */}
+      <ActiveBudgetsSection />
 
+      {/* Transactions Summary */}
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>
