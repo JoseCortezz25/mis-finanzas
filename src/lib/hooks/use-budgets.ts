@@ -26,7 +26,8 @@ export const budgetKeys = {
 };
 
 /**
- * Hook to fetch all budgets for the current user
+ * Hook to fetch all budgets for the current user with computed amounts
+ * Amount is calculated from assigned income transactions
  */
 export function useBudgets() {
   const supabase = createBrowserClient();
@@ -34,14 +35,14 @@ export function useBudgets() {
   return useQuery({
     queryKey: budgetKeys.all,
     queryFn: async () => {
-      console.log('[BUDGETS] useBudgets - Obteniendo presupuestos');
+      console.log('[BUDGETS] useBudgets - Obteniendo presupuestos con montos');
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      const result = await repository.findAll(user.id);
+      const result = await repository.findAllWithAmounts(user.id);
       console.log(
         '[BUDGETS] useBudgets - Exito:',
         result.length,
@@ -53,7 +54,8 @@ export function useBudgets() {
 }
 
 /**
- * Hook to fetch a single budget by ID
+ * Hook to fetch a single budget by ID with computed amount
+ * Amount is calculated from assigned income transactions
  */
 export function useBudget(id: string) {
   const supabase = createBrowserClient();
@@ -61,14 +63,14 @@ export function useBudget(id: string) {
   return useQuery({
     queryKey: budgetKeys.detail(id),
     queryFn: async () => {
-      console.log('[BUDGETS] useBudget - Obteniendo presupuesto:', id);
+      console.log('[BUDGETS] useBudget - Obteniendo presupuesto con monto:', id);
       const {
         data: { user }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      const result = await repository.findById(id, user.id);
+      const result = await repository.findByIdWithAmount(id, user.id);
       console.log('[BUDGETS] useBudget - Exito:', result);
       return result;
     },
@@ -101,7 +103,8 @@ export function useCurrentBudget() {
 }
 
 /**
- * Hook to fetch active budgets
+ * Hook to fetch active budgets with computed amounts
+ * Amount is calculated from assigned income transactions
  */
 export function useActiveBudgets() {
   const supabase = createBrowserClient();
@@ -110,7 +113,7 @@ export function useActiveBudgets() {
     queryKey: budgetKeys.all,
     queryFn: async () => {
       console.log(
-        '[BUDGETS] useActiveBudgets - Obteniendo presupuestos activos'
+        '[BUDGETS] useActiveBudgets - Obteniendo presupuestos activos con montos'
       );
       const {
         data: { user }
@@ -118,7 +121,7 @@ export function useActiveBudgets() {
       if (!user) throw new Error('No autenticado');
 
       const repository = new BudgetRepository(supabase);
-      const result = await repository.findActive(user.id);
+      const result = await repository.findActiveWithAmounts(user.id);
       console.log(
         '[BUDGETS] useActiveBudgets - Exito:',
         result.length,

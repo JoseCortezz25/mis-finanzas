@@ -3,6 +3,7 @@ import { z } from 'zod';
 /**
  * Budget validation schema
  * Budgets are flexible groups for organizing transactions
+ * NOTE: total_amount is computed dynamically from income transactions and not stored
  */
 export const budgetSchema = z.object({
   name: z
@@ -10,10 +11,6 @@ export const budgetSchema = z.object({
     .min(1, 'El nombre es requerido')
     .max(100, 'El nombre no puede exceder 100 caracteres'),
   category: z.string().nullable().optional(),
-  total_amount: z
-    .number()
-    .positive('El monto debe ser mayor a 0')
-    .max(999999999, 'El monto es demasiado grande'),
   month: z
     .number()
     .int('El mes debe ser un número entero')

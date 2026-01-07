@@ -1,0 +1,12 @@
+-- Add category column to budgets table
+-- This migration adds support for budget category selection
+
+ALTER TABLE budgets
+ADD COLUMN category TEXT NOT NULL DEFAULT 'otros';
+
+-- Add comment
+COMMENT ON COLUMN budgets.category IS 'Budget category (e.g., comida, transporte, entretenimiento, etc.)';
+
+-- Add index for better query performance
+CREATE INDEX IF NOT EXISTS idx_budgets_category ON budgets(category);
+CREATE INDEX IF NOT EXISTS idx_budgets_user_category ON budgets(user_id, category);

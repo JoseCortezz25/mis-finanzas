@@ -10,6 +10,7 @@ import {
 
 /**
  * Create a new budget
+ * NOTE: total_amount is computed from income transactions assigned to this budget
  */
 export async function createBudget(data: Omit<BudgetInsert, 'user_id'>) {
   console.log('[BUDGET] createBudget - Iniciando peticion:', data);
@@ -43,6 +44,7 @@ export async function createBudget(data: Omit<BudgetInsert, 'user_id'>) {
 
 /**
  * Update an existing budget
+ * NOTE: total_amount is computed from income transactions and cannot be updated manually
  */
 export async function updateBudget(id: string, data: Partial<BudgetInsert>) {
   console.log('[BUDGET] updateBudget - Iniciando peticion:', { id, data });
@@ -57,8 +59,17 @@ export async function updateBudget(id: string, data: Partial<BudgetInsert>) {
       return { success: false, error: ERROR_MESSAGES.AUTH_REQUIRED };
     }
 
+    // Filter out total_amount - it's computed from transactions
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { total_amount, ...updateData } = data as any;
+    if (total_amount !== undefined) {
+      console.warn(
+        '[BUDGET] updateBudget - total_amount cannot be updated manually, ignoring'
+      );
+    }
+
     const repository = new BudgetRepository(supabase);
-    const budget = await repository.update(id, data, user.id);
+    const budget = await repository.update(id, updateData, user.id);
 
     console.log('[BUDGET] updateBudget - Exito:', budget);
     revalidatePath('/dashboard');

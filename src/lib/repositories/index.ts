@@ -7,7 +7,8 @@ export {
   BudgetRepository,
   type Budget,
   type BudgetInsert,
-  type BudgetUpdate
+  type BudgetUpdate,
+  type BudgetWithAmount
 } from './budget-repository';
 
 export {

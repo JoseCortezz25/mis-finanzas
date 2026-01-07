@@ -19,9 +19,11 @@ export default function EditarPresupuestoPage() {
   const budget = budgets?.find(b => b.id === budgetId);
 
   const handleSubmit = async (data: BudgetFormValues) => {
+    // Note: total_amount is filtered by Server Action
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await updateBudget.mutateAsync({
       id: budgetId,
-      data
+      data: data as any
     });
 
     if (result.success) {
@@ -58,7 +60,7 @@ export default function EditarPresupuestoPage() {
             onSubmit={handleSubmit}
             defaultValues={{
               name: budget.name,
-              total_amount: budget.total_amount,
+              category: budget.category,
               month: budget.month,
               year: budget.year
             }}

@@ -13,7 +13,13 @@ export default function CrearPresupuestoPage() {
   const createBudget = useCreateBudget();
 
   const handleSubmit = async (data: BudgetFormValues) => {
-    const result = await createBudget.mutateAsync(data);
+    // Temporary: Add total_amount: 0 for DB types compatibility
+    // Will be removed after migration (Fase 5)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await createBudget.mutateAsync({
+      ...data,
+      total_amount: 0
+    } as any);
 
     if (result.success) {
       toast.success(BUDGET_MESSAGES.SUCCESS.CREATED);

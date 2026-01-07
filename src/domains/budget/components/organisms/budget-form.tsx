@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { budgetFormSchema, type BudgetFormValues } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { CategorySelector } from '@/domains/budget/components/molecules/category-selector';
-import { CurrencyInput } from '@/domains/budget/components/molecules/currency-input';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,21 +33,15 @@ export function BudgetForm({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: defaultValues || {
       name: '',
-      category: null,
-      total_amount: 0
+      category: null
     }
   });
 
   const name = watch('name');
   const category = watch('category');
-  const totalAmount = watch('total_amount');
 
   const handleCategoryChange = (categoryId: string) => {
     setValue('category', categoryId || null, { shouldValidate: true });
-  };
-
-  const handleAmountChange = (amount: number) => {
-    setValue('total_amount', amount, { shouldValidate: true });
   };
 
   return (
@@ -104,24 +97,19 @@ export function BudgetForm({
           )}
         </div>
 
-        <div className="budget-form__divider" />
-
-        {/* Amount Input */}
-        <CurrencyInput
-          value={totalAmount}
-          onChange={handleAmountChange}
-          disabled={isLoading}
-        />
-        {errors.total_amount && (
-          <p className="budget-form__error">{errors.total_amount.message}</p>
-        )}
+        <div className="budget-form__info-message">
+          <p>
+            El monto del presupuesto se calculará automáticamente sumando los
+            ingresos que asignes a este presupuesto.
+          </p>
+        </div>
 
         <Button
           type="submit"
-          disabled={isLoading || !name || totalAmount === 0}
+          disabled={isLoading || !name}
           className={cn(
             'budget-form__submit',
-            (!name || totalAmount === 0) && 'budget-form__submit--disabled'
+            !name && 'budget-form__submit--disabled'
           )}
         >
           {isLoading ? 'Creando...' : 'Crear presupuesto'}

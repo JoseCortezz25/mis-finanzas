@@ -7,6 +7,14 @@ export type BudgetInsert = Database['public']['Tables']['budgets']['Insert'];
 export type BudgetUpdate = Database['public']['Tables']['budgets']['Update'];
 
 /**
+ * Budget with computed amount from income transactions
+ * This type extends Budget with a dynamically calculated total_amount
+ */
+export interface BudgetWithAmount extends Budget {
+  total_amount: number; // Computed: SUM(transactions WHERE budget_id AND type='income')
+}
+
+/**
  * Budget Repository
  * Handles all budget-related database operations
  */
@@ -176,5 +184,156 @@ export class BudgetRepository extends SupabaseRepository<Budget, 'budgets'> {
 
     console.log('[BUDGET-REPO] getStats - Exito:', stats);
     return stats;
+  }
+
+  // ============================================================
+  // COMPUTED AMOUNT METHODS
+  // Methods for calculating budget amounts dynamically from income transactions
+  // ============================================================
+
+  /**
+   * Calculate total amount for a budget from income transactions
+   * @param budgetId - Budget ID
+   * @param userId - User ID for security
+   * @returns Computed budget amount
+   */
+  async calculateBudgetAmount(
+    budgetId: string,
+    userId: string
+  ): Promise<number> {
+    console.log('[BUDGET-REPO] calculateBudgetAmount:', { budgetId, userId });
+
+    const { data, error } = await this.supabase
+      .from('transactions')
+      .select('amount')
+      .eq('budget_id', budgetId)
+      .eq('user_id', userId)
+      .eq('type', 'income');
+
+    if (error) {
+      console.error('[BUDGET-REPO] calculateBudgetAmount - Error:', error);
+      throw error;
+    }
+
+    const transactions = (data || []) as Array<{ amount: number }>;
+    const total = transactions.reduce((sum, t) => sum + t.amount, 0);
+    console.log('[BUDGET-REPO] calculateBudgetAmount - Result:', total);
+    return total;
+  }
+
+  /**
+   * Find budget by ID with computed amount
+   * @param id - Budget ID
+   * @param userId - User ID for security
+   * @returns Budget with computed total_amount
+   */
+  async findByIdWithAmount(
+    id: string,
+    userId: string
+  ): Promise<BudgetWithAmount | null> {
+    console.log('[BUDGET-REPO] findByIdWithAmount:', { id, userId });
+
+    const budget = await this.findById(id, userId);
+    if (!budget) return null;
+
+    const total_amount = await this.calculateBudgetAmount(id, userId);
+
+    return {
+      ...budget,
+      total_amount
+    };
+  }
+
+  /**
+   * Find all budgets for user with computed amounts
+   * Optimized to avoid N+1 queries
+   * @param userId - User ID
+   * @returns Array of budgets with computed amounts
+   */
+  async findAllWithAmounts(userId: string): Promise<BudgetWithAmount[]> {
+    console.log('[BUDGET-REPO] findAllWithAmounts:', userId);
+
+    // Fetch all budgets
+    const budgets = await this.findAll(userId);
+
+    if (budgets.length === 0) return [];
+
+    // Fetch all income transactions for user in one query
+    const { data: transactionsData, error } = await this.supabase
+      .from('transactions')
+      .select('budget_id, amount')
+      .eq('user_id', userId)
+      .eq('type', 'income')
+      .not('budget_id', 'is', null);
+
+    if (error) {
+      console.error('[BUDGET-REPO] findAllWithAmounts - Error:', error);
+      throw error;
+    }
+
+    // Group transactions by budget_id and sum amounts
+    const transactions = (transactionsData || []) as Array<{
+      budget_id: string;
+      amount: number;
+    }>;
+    const budgetAmounts = new Map<string, number>();
+    transactions.forEach(t => {
+      const current = budgetAmounts.get(t.budget_id) || 0;
+      budgetAmounts.set(t.budget_id, current + t.amount);
+    });
+
+    // Attach computed amounts to budgets
+    const budgetsWithAmounts: BudgetWithAmount[] = budgets.map(budget => ({
+      ...budget,
+      total_amount: budgetAmounts.get(budget.id) || 0
+    }));
+
+    console.log(
+      '[BUDGET-REPO] findAllWithAmounts - Success:',
+      budgetsWithAmounts.length
+    );
+    return budgetsWithAmounts;
+  }
+
+  /**
+   * Find active budgets with computed amounts
+   * @param userId - User ID
+   * @returns Array of active budgets with amounts
+   */
+  async findActiveWithAmounts(userId: string): Promise<BudgetWithAmount[]> {
+    console.log('[BUDGET-REPO] findActiveWithAmounts:', userId);
+
+    const allBudgetsWithAmounts = await this.findAllWithAmounts(userId);
+
+    return allBudgetsWithAmounts.filter(b => b.status === 'active');
+  }
+
+  /**
+   * Find budget by month/year with computed amount
+   * @param userId - User ID
+   * @param month - Month (1-12)
+   * @param year - Year
+   * @returns Budget with computed amount or null
+   */
+  async findByMonthYearWithAmount(
+    userId: string,
+    month: number,
+    year: number
+  ): Promise<BudgetWithAmount | null> {
+    console.log('[BUDGET-REPO] findByMonthYearWithAmount:', {
+      userId,
+      month,
+      year
+    });
+
+    const budget = await this.findByMonthYear(userId, month, year);
+    if (!budget) return null;
+
+    const total_amount = await this.calculateBudgetAmount(budget.id, userId);
+
+    return {
+      ...budget,
+      total_amount
+    };
   }
 }
