@@ -57,7 +57,7 @@ export default function EditarMovimientoPage() {
           <TransactionForm
             onSubmit={handleSubmit}
             defaultValues={{
-              type: transaction.type,
+              type: transaction.type as 'income' | 'expense',
               amount: transaction.amount,
               category_id: transaction.category_id,
               budget_id: transaction.budget_id,

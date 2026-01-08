@@ -61,7 +61,7 @@ async function ProfileContent() {
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Name form */}
           <div className="animate-in fade-in slide-in-from-bottom-4 delay-200 duration-700">
-            <UpdateNameForm currentName={profile.display_name} />
+            <UpdateNameForm currentName={profile.full_name || ''} />
           </div>
 
           {/* Password form */}
