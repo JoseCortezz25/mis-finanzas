@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import type { Database } from '@/types/supabase';
+import type { BudgetWithAmount } from '@/lib/repositories';
 import { calculateBudgetHealth, type BudgetWithHealth } from '../types';
 
-type Budget = Database['public']['Tables']['budgets']['Row'];
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 
 interface UseBudgetCalculationsParams {
-  budgets: Budget[] | undefined;
+  budgets: BudgetWithAmount[] | undefined;
   transactions: Transaction[] | undefined;
 }
 

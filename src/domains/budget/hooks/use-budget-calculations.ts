@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { Database } from '@/types/supabase';
+import type { BudgetWithAmount } from '@/lib/repositories';
 
-type Budget = Database['public']['Tables']['budgets']['Row'];
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 
 export type BudgetHealthStatus = 'healthy' | 'warning' | 'alert' | 'danger';
@@ -24,6 +24,7 @@ export interface BudgetCalculations {
  *   - Income = SUM(income transactions)
  *   - Available = budget total + income - spent
  *   - Percentage = (spent / total) × 100
+ *   - Budget total_amount is computed from assigned income transactions
  *
  * - BR-BD-2: Budget health status thresholds
  *   - 0-69%: Healthy (green)
@@ -31,12 +32,12 @@ export interface BudgetCalculations {
  *   - 90-99%: Alert (orange)
  *   - 100%+: Danger (red)
  *
- * @param budget - The budget entity
+ * @param budget - The budget entity with computed total_amount
  * @param transactions - Array of transactions related to this budget
  * @returns Calculated budget metrics and health status
  */
 export function useBudgetCalculations(
-  budget: Budget | null | undefined,
+  budget: BudgetWithAmount | null | undefined,
   transactions: Transaction[] | undefined
 ): BudgetCalculations {
   return useMemo(() => {

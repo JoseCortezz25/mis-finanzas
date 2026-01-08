@@ -7,13 +7,13 @@ import { AlertCircle, TrendingDown, TrendingUp } from 'lucide-react';
 import { BUDGET_DETAIL_MESSAGES } from '@/domains/budget/budget-detail.text-map';
 import { useBudgetCalculations } from '@/domains/budget/hooks';
 import type { Database } from '@/types/supabase';
+import type { BudgetWithAmount } from '@/lib/repositories';
 import { cn } from '@/lib/utils';
 
-type Budget = Database['public']['Tables']['budgets']['Row'];
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 
 interface BudgetMetricsProps {
-  budget: Budget;
+  budget: BudgetWithAmount;
   transactions: Transaction[];
 }
 
