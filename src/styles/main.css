@@ -6,4 +6,5 @@
 @import './components/atoms/button.css';
 @import './components/molecules/category-selector.css';
 @import './components/molecules/currency-input.css';
+@import './components/molecules/heatmap-cell.css';
 @import './components/organisms/budget-form.css';

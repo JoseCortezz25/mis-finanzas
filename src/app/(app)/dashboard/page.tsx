@@ -1,6 +1,11 @@
 'use client';
 
-import { useBudgets, useTransactionStats } from '@/lib/hooks';
+import {
+  useBudgets,
+  useTransactionStats,
+  useTransactions,
+  useCategories
+} from '@/lib/hooks';
 import {
   Card,
   CardContent,
@@ -11,10 +16,14 @@ import {
 import { TrendingUp, TrendingDown, Wallet, Calendar } from 'lucide-react';
 import { DASHBOARD_MESSAGES } from '@/domains/dashboard/messages';
 import { ActiveBudgetsSection } from '@/domains/dashboard/components/active-budgets-section';
+import { BalanceGaugeCard } from '@/domains/dashboard/components/organisms/balance-gauge-card';
 
 export default function DashboardPage() {
   const { data: budgets, isLoading: budgetsLoading } = useBudgets();
   const { data: stats, isLoading: statsLoading } = useTransactionStats();
+  const { data: transactions, isLoading: transactionsLoading } =
+    useTransactions();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
 
   // Current budget for stats card
   const currentMonth = new Date().getMonth() + 1;
@@ -112,6 +121,13 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Balance Gauge Card */}
+      <BalanceGaugeCard
+        transactions={transactions}
+        categories={categories}
+        isLoading={transactionsLoading || categoriesLoading}
+      />
 
       {/* Active Budgets Section - New distinctive design */}
       <ActiveBudgetsSection />

@@ -8,6 +8,8 @@ import {
 } from '@/lib/hooks';
 import { REPORTS_MESSAGES } from '@/domains/reports/messages';
 import { ExpensesByCategoryChart } from '@/domains/reports/components/organisms/expenses-by-category-chart';
+import { DailyBarChart } from '@/domains/reports/components/organisms/daily-bar-chart';
+import { SpendingHeatmap } from '@/domains/reports/components/organisms/spending-heatmap';
 import {
   Card,
   CardContent,
@@ -44,9 +46,12 @@ export default function ReportesPage() {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
 
   const categoriesById = useMemo(() => {
-    const map = new Map<string, { name: string; color: string }>();
+    const map = new Map<string, { name: string; color?: string }>();
     for (const category of categories ?? []) {
-      map.set(category.id, { name: category.name, color: category.color });
+      map.set(category.id, {
+        name: category.name,
+        color: category.color ?? undefined
+      });
     }
     return map;
   }, [categories]);
@@ -283,6 +288,19 @@ export default function ReportesPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Daily Bar Chart */}
+      <DailyBarChart
+        transactions={transactions}
+        isLoading={transactionsLoading}
+      />
+
+      {/* Spending Heatmap */}
+      <SpendingHeatmap
+        transactions={transactions}
+        categories={categories}
+        isLoading={transactionsLoading || categoriesLoading}
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
         {/* Category breakdown */}

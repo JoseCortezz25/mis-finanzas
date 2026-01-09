@@ -171,7 +171,7 @@ export function TransactionForm({
                   ) : categories && categories.length > 0 ? (
                     categories.map(category => {
                       const colors = getCategoryColors(category.name);
-                      const Icon = getIconComponent(category.icon);
+                      const Icon = getIconComponent(category.icon || '');
                       const isSelected = field.value === category.id;
 
                       return (

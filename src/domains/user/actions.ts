@@ -52,7 +52,6 @@ export async function updateDisplayName(
     // Update display name
     const { error: updateError } = await supabase
       .from('users')
-      // @ts-expect-error - Supabase type inference issue with users table
       .update({
         display_name: validation.data.name, // eslint-disable-line camelcase
         updated_at: new Date().toISOString() // eslint-disable-line camelcase
@@ -200,7 +199,6 @@ export async function deleteAccount(formData: FormData): Promise<ActionResult> {
     // Soft delete user
     const { error: deleteError } = await supabase
       .from('users')
-      // @ts-expect-error - Supabase type inference issue with users table
       .update({
         deleted_at: new Date().toISOString() // eslint-disable-line camelcase
       })
