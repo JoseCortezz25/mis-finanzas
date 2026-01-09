@@ -17,7 +17,7 @@ export default function CrearMovimientoPage() {
 
     if (result.success) {
       toast.success(TRANSACTION_MESSAGES.SUCCESS.CREATED);
-      router.push('/movimientos');
+      router.push('/dashboard');
     } else {
       toast.error(result.error);
     }

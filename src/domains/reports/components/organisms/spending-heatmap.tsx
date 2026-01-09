@@ -61,17 +61,25 @@ export function SpendingHeatmap({
 
     for (let weekIdx = 0; weekIdx < heatmapData.grid.length; weekIdx++) {
       const week = heatmapData.grid[weekIdx];
-      // Find first valid date in week
-      const firstValidDay = week.days.find(d => d.date !== '');
-      if (!firstValidDay || !firstValidDay.date) continue;
 
-      const month = getMonth(new Date(firstValidDay.date));
-      if (month !== lastMonth) {
-        labels.push({
-          label: format(new Date(firstValidDay.date), 'MMM', { locale: es }),
-          weekIndex: weekIdx
-        });
-        lastMonth = month;
+      // Check all valid days in the week
+      for (const day of week.days) {
+        if (!day.date) continue;
+
+        const date = new Date(day.date);
+        const month = getMonth(date);
+        const dayOfMonth = date.getDate();
+
+        // Only add label if this is a new month and it's early in the month (day 1-7)
+        // This ensures the label appears at the start of the month visually
+        if (month !== lastMonth && dayOfMonth <= 7) {
+          labels.push({
+            label: format(date, 'MMM', { locale: es }),
+            weekIndex: weekIdx
+          });
+          lastMonth = month;
+          break; // Move to next week
+        }
       }
     }
 

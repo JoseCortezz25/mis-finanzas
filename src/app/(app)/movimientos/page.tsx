@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { useTransactions, useDeleteTransaction } from '@/lib/hooks';
@@ -20,6 +21,14 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -32,17 +41,34 @@ export default function MovimientosPage() {
   const router = useRouter();
   const { data: transactions, isLoading } = useTransactions();
   const deleteTransaction = useDeleteTransaction();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(
+    null
+  );
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(TRANSACTION_MESSAGES.CONFIRMATIONS.DELETE)) return;
+  const handleDeleteClick = (id: string) => {
+    setTransactionToDelete(id);
+    setDeleteDialogOpen(true);
+  };
 
-    const result = await deleteTransaction.mutateAsync(id);
+  const handleConfirmDelete = async () => {
+    if (!transactionToDelete) return;
+
+    const result = await deleteTransaction.mutateAsync(transactionToDelete);
 
     if (result.success) {
       toast.success(TRANSACTION_MESSAGES.SUCCESS.DELETED);
     } else {
       toast.error(result.error);
     }
+
+    setDeleteDialogOpen(false);
+    setTransactionToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setTransactionToDelete(null);
   };
 
   return (
@@ -133,7 +159,7 @@ export default function MovimientosPage() {
                         onEdit={() =>
                           router.push(`/movimientos/editar/${transaction.id}`)
                         }
-                        onDelete={() => handleDelete(transaction.id)}
+                        onDelete={() => handleDeleteClick(transaction.id)}
                       />
                     </TableCell>
                   </TableRow>
@@ -143,6 +169,34 @@ export default function MovimientosPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar eliminación</DialogTitle>
+            <DialogDescription>
+              {TRANSACTION_MESSAGES.CONFIRMATIONS.DELETE}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleCancelDelete}
+              disabled={deleteTransaction.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleteTransaction.isPending}
+            >
+              {deleteTransaction.isPending ? 'Eliminando...' : 'Eliminar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }

@@ -17,7 +17,7 @@ export default function CrearPresupuestoPage() {
 
     if (result.success) {
       toast.success(BUDGET_MESSAGES.SUCCESS.CREATED);
-      router.push('/presupuesto');
+      router.push('/dashboard');
     } else {
       toast.error(result.error);
     }
