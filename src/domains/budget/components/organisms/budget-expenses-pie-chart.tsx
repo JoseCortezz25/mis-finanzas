@@ -10,6 +10,7 @@ import {
   Legend
 } from 'recharts';
 import type { Database } from '@/types/supabase';
+import { useCategories } from '@/lib/hooks';
 
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -111,6 +112,14 @@ function CustomLegend({
 export function BudgetExpensesPieChart({
   transactions
 }: BudgetExpensesPieChartProps) {
+  const { data: categories = [] } = useCategories();
+
+  // Helper to get category name from category_id
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    return category?.name || 'sin categoría';
+  };
+
   // Filter only expense transactions
   const expenseTransactions = transactions.filter(t => t.type === 'expense');
 
@@ -138,7 +147,7 @@ export function BudgetExpensesPieChart({
   // Group expenses by category
   const expensesByCategory = expenseTransactions.reduce(
     (acc, transaction) => {
-      const category = (transaction.category || 'sin categoría').toLowerCase();
+      const category = getCategoryName(transaction.category_id).toLowerCase();
       if (!acc[category]) {
         acc[category] = 0;
       }
@@ -173,12 +182,12 @@ export function BudgetExpensesPieChart({
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={chartData}
+              data={chartData as unknown as Record<string, unknown>[]}
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) =>
-                `${name}: ${(percent * 100).toFixed(0)}%`
+              label={({ name, percent }: { name?: string; percent?: number }) =>
+                `${name ?? ''}: ${((percent ?? 0) * 100).toFixed(0)}%`
               }
               outerRadius={120}
               fill="#8884d8"
