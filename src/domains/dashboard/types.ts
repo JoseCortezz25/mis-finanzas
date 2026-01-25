@@ -2,7 +2,9 @@
  * Dashboard domain types and utilities
  */
 
-export type BudgetHealthStatus = 'healthy' | 'warning' | 'alert' | 'danger';
+export type BudgetHealthStatus = 'healthy' | 'warning' | 'exceeded';
+
+export type BudgetCardVariant = 'healthy' | 'warning' | 'exceeded';
 
 export interface BudgetWithHealth {
   id: string;
@@ -20,17 +22,15 @@ export interface BudgetWithHealth {
 
 /**
  * Calculate budget health status based on percentage used
- * - Healthy: 0-69% spent
- * - Warning: 70-89% spent
- * - Alert: 90-99% spent
- * - Danger: 100%+ spent (over budget)
+ * - Healthy: 0-79% spent
+ * - Warning: 80-99% spent
+ * - Exceeded: 100%+ spent (over budget)
  */
 export function calculateBudgetHealth(
   percentageUsed: number
 ): BudgetHealthStatus {
-  if (percentageUsed >= 100) return 'danger';
-  if (percentageUsed >= 90) return 'alert';
-  if (percentageUsed >= 70) return 'warning';
+  if (percentageUsed >= 100) return 'exceeded';
+  if (percentageUsed >= 80) return 'warning';
   return 'healthy';
 }
 

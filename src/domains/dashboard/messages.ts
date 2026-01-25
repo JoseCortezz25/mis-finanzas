@@ -69,12 +69,22 @@ export const DASHBOARD_MESSAGES = {
     VIEW_DETAILS: 'Ver detalles',
     VIEW_ALL: 'Ver todos los presupuestos',
 
+    // New budget status card labels
+    MONTHLY_BUDGET_LABEL: 'PRESUPUESTO MENSUAL',
+    EXCEEDED_BY_LABEL: 'Excedido por',
+    AVAILABLE_LABEL: 'Disponible',
+
     // Health status labels
     HEALTH: {
       HEALTHY: 'Saludable',
-      WARNING: 'Precaución',
-      ALERT: 'Alerta',
-      DANGER: 'Excedido'
+      WARNING: 'Alerta',
+      EXCEEDED: 'Excedido'
+    },
+
+    // Help text
+    HELP_TEXT: {
+      EXCEEDED:
+        'Te sugerimos revisar tus gastos hormiga para ajustar este presupuesto.'
     },
 
     // Tooltips

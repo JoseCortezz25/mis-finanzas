@@ -13,7 +13,7 @@ interface BudgetProgressBarProps {
 
 /**
  * Budget progress bar with dynamic health-based coloring
- * Shows percentage both visually and numerically for accessibility
+ * Visual-only progress indicator (percentage shown in header badge)
  */
 export function BudgetProgressBar({
   percentageUsed,
@@ -23,37 +23,32 @@ export function BudgetProgressBar({
   // Cap percentage display at 100% for visual consistency
   const displayPercentage = Math.min(percentageUsed, 100);
 
-  const colorClasses = {
-    healthy: 'bg-emerald-500',
-    warning: 'bg-amber-500',
-    alert: 'bg-orange-500',
-    danger: 'bg-red-500'
+  const progressColors = {
+    exceeded: {
+      bg: 'bg-red-100',
+      fill: 'bg-red-500'
+    },
+    warning: {
+      bg: 'bg-amber-100',
+      fill: 'bg-amber-500'
+    },
+    healthy: {
+      bg: 'bg-gray-100',
+      fill: 'bg-gray-800'
+    }
   }[healthStatus];
 
   return (
-    <div className={cn('space-y-2', className)}>
-      {/* Progress bar with custom colored fill */}
-      <div className="relative">
-        <Progress
-          value={displayPercentage}
-          className="h-3 bg-slate-200"
-          indicatorClassName={cn('transition-all duration-700', colorClasses)}
-          aria-label={`${DASHBOARD_MESSAGES.ACTIVE_BUDGETS.PROGRESS_LABEL}: ${percentageUsed}%`}
-        />
-
-        {/* Percentage label */}
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 pr-2">
-          <span
-            className={cn(
-              'text-sm font-medium',
-              // Use white text if percentage is high enough to overlap with dark background
-              displayPercentage > 50 ? 'text-white' : 'text-slate-700'
-            )}
-          >
-            {percentageUsed}%
-          </span>
-        </div>
-      </div>
+    <div className={className}>
+      <Progress
+        value={displayPercentage}
+        className={cn('h-2', progressColors.bg)}
+        indicatorClassName={cn(
+          'transition-all duration-700',
+          progressColors.fill
+        )}
+        aria-label={`${DASHBOARD_MESSAGES.ACTIVE_BUDGETS.PROGRESS_LABEL}: ${percentageUsed}%`}
+      />
     </div>
   );
 }

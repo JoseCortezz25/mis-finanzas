@@ -4,7 +4,7 @@ import { useBudgets } from '@/lib/hooks';
 import { useTransactions } from '@/lib/hooks/use-transactions';
 import { useBudgetCalculations } from '../hooks/use-budget-calculations';
 import { DASHBOARD_MESSAGES } from '../messages';
-import { BudgetCard } from './budget-card';
+import { BudgetStatusCard } from './organisms/budget-status-card';
 import { BudgetCardSkeleton } from './budget-card-skeleton';
 import { EmptyBudgetsState } from './empty-budgets-state';
 import { ErrorBudgetsState } from './error-budgets-state';
@@ -79,7 +79,7 @@ export function ActiveBudgetsSection() {
         {!isLoading && !hasError && activeBudgets.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {activeBudgets.map(budget => (
-              <BudgetCard key={budget.id} budget={budget} />
+              <BudgetStatusCard key={budget.id} budget={budget} />
             ))}
           </div>
         )}
