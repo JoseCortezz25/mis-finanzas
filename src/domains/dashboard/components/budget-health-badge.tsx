@@ -1,9 +1,4 @@
-import {
-  CheckCircle2,
-  AlertTriangle,
-  AlertCircle,
-  XCircle
-} from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { BudgetHealthStatus } from '../types';
@@ -33,17 +28,16 @@ export function BudgetHealthBadge({
       label: DASHBOARD_MESSAGES.ACTIVE_BUDGETS.HEALTH.WARNING,
       className: 'bg-amber-50 text-amber-700 border-amber-500'
     },
-    alert: {
-      icon: AlertCircle,
-      label: DASHBOARD_MESSAGES.ACTIVE_BUDGETS.HEALTH.ALERT,
-      className: 'bg-orange-50 text-orange-700 border-orange-500'
-    },
-    danger: {
+    exceeded: {
       icon: XCircle,
-      label: DASHBOARD_MESSAGES.ACTIVE_BUDGETS.HEALTH.DANGER,
+      label: DASHBOARD_MESSAGES.ACTIVE_BUDGETS.HEALTH.EXCEEDED,
       className: 'bg-red-50 text-red-700 border-red-500'
     }
   }[healthStatus];
+
+  if (!config) {
+    return null;
+  }
 
   const Icon = config.icon;
 

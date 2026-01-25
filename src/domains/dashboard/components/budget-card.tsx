@@ -34,12 +34,16 @@ export function BudgetCard({ budget, className }: BudgetCardProps) {
   };
 
   // Health-based border color for hover state
-  const borderColorClass = {
-    healthy: 'hover:border-emerald-500',
-    warning: 'hover:border-amber-500',
-    alert: 'hover:border-orange-500',
-    danger: 'hover:border-red-500'
-  }[budget.health_status];
+  const borderColorClass =
+    (
+      {
+        healthy: 'hover:border-emerald-500',
+        warning: 'hover:border-amber-500',
+        alert: 'hover:border-orange-500',
+        danger: 'hover:border-red-500',
+        exceeded: 'hover:border-red-500'
+      } as Record<string, string>
+    )[budget.health_status] ?? 'hover:border-emerald-500';
 
   const isNegative = budget.available_amount < 0;
 

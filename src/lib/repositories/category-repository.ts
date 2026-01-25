@@ -2,11 +2,22 @@ import { SupabaseRepository } from '@/lib/supabase/base-repository';
 import { type SupabaseClient } from '@supabase/supabase-js';
 import { type Database } from '@/types/supabase';
 
-export type Category = Database['public']['Tables']['categories']['Row'];
+// Extended type with new fields from migration
+export type Category = Database['public']['Tables']['categories']['Row'] & {
+  description?: string | null;
+  is_custom?: boolean;
+};
+
 export type CategoryInsert =
-  Database['public']['Tables']['categories']['Insert'];
+  Database['public']['Tables']['categories']['Insert'] & {
+    description?: string | null;
+    is_custom?: boolean;
+  };
+
 export type CategoryUpdate =
-  Database['public']['Tables']['categories']['Update'];
+  Database['public']['Tables']['categories']['Update'] & {
+    description?: string | null;
+  };
 
 /**
  * Category Repository

@@ -50,6 +50,7 @@ export async function createCategory(
     console.log('[CATEGORY] createCategory - Exito:', category);
     revalidatePath('/dashboard');
     revalidatePath('/movimientos');
+    revalidatePath('/categorias');
 
     return { success: true, data: category };
   } catch (error) {
@@ -101,6 +102,7 @@ export async function updateCategory(
     console.log('[CATEGORY] updateCategory - Exito:', category);
     revalidatePath('/dashboard');
     revalidatePath('/movimientos');
+    revalidatePath('/categorias');
 
     return { success: true, data: category };
   } catch (error) {
@@ -134,6 +136,7 @@ export async function deleteCategory(id: string) {
     console.log('[CATEGORY] deleteCategory - Exito');
     revalidatePath('/dashboard');
     revalidatePath('/movimientos');
+    revalidatePath('/categorias');
 
     return { success: true };
   } catch (error) {

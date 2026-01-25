@@ -48,6 +48,36 @@ export const REPORTS_MESSAGES = {
       'Los 10 movimientos más recientes del período seleccionado'
   },
 
+  SANKEY: {
+    TITLE: 'Flujo de Gastos',
+    DESCRIPTION: 'Visualiza hacia dónde se dirigen tus gastos',
+    ARIA_LABEL: 'Diagrama sankey del flujo de gastos',
+    FILTERS: {
+      PERIOD: 'Período',
+      CATEGORY: 'Categoría',
+      BUDGET: 'Presupuesto'
+    },
+    PERIOD_OPTIONS: {
+      LAST_MONTH: 'Último mes',
+      THIS_MONTH: 'Este mes',
+      THIS_WEEK: 'Esta semana',
+      THIS_YEAR: 'Este año'
+    },
+    CATEGORY_ALL: 'Todas las categorías',
+    BUDGET_ALL: 'Todos los presupuestos',
+    BUDGET_NONE: 'Sin presupuesto',
+    UNKNOWN_CATEGORY: 'Categoría desconocida',
+    UNKNOWN_BUDGET: 'Presupuesto desconocido',
+    EMPTY_TITLE: 'Sin gastos para mostrar',
+    EMPTY_DESCRIPTION:
+      'No hay transacciones de gasto en el período y filtros seleccionados',
+    TOOLTIP: {
+      FROM: 'Desde',
+      TO: 'Hacia',
+      AMOUNT: 'Monto'
+    }
+  },
+
   // Charts
   CHART: {
     EXPENSES_BY_CATEGORY_ARIA_LABEL:

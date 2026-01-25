@@ -10,6 +10,7 @@ import { REPORTS_MESSAGES } from '@/domains/reports/messages';
 import { ExpensesByCategoryChart } from '@/domains/reports/components/organisms/expenses-by-category-chart';
 import { DailyBarChart } from '@/domains/reports/components/organisms/daily-bar-chart';
 import { SpendingHeatmap } from '@/domains/reports/components/organisms/spending-heatmap';
+import { SpendingSankey } from '@/domains/reports/components/organisms/spending-sankey';
 import {
   Card,
   CardContent,
@@ -33,17 +34,22 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export default function ReportesPage() {
+  const [isMounted, setIsMounted] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('all');
   const { data: transactions, isLoading: transactionsLoading } =
     useTransactions();
   const { isLoading: statsLoading } = useTransactionStats();
-  const { isLoading: budgetsLoading } = useBudgets();
+  const { data: budgets, isLoading: budgetsLoading } = useBudgets();
   const { data: categories, isLoading: categoriesLoading } = useCategories();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const categoriesById = useMemo(() => {
     const map = new Map<string, { name: string; color?: string }>();
@@ -190,6 +196,7 @@ export default function ReportesPage() {
   }, [filteredTransactions]);
 
   if (
+    !isMounted ||
     transactionsLoading ||
     statsLoading ||
     budgetsLoading ||
@@ -300,6 +307,14 @@ export default function ReportesPage() {
         transactions={transactions}
         categories={categories}
         isLoading={transactionsLoading || categoriesLoading}
+      />
+
+      {/* Spending Sankey */}
+      <SpendingSankey
+        transactions={transactions}
+        categories={categories}
+        budgets={budgets}
+        isLoading={transactionsLoading || categoriesLoading || budgetsLoading}
       />
 
       <div className="grid gap-4 md:grid-cols-2">

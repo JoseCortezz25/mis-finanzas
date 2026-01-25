@@ -8,6 +8,11 @@ export const categorySchema = z.object({
     .string()
     .min(1, 'El nombre es requerido')
     .max(50, 'El nombre no puede exceder 50 caracteres'),
+  description: z
+    .string()
+    .max(200, 'La descripción no puede exceder 200 caracteres')
+    .optional()
+    .or(z.literal('')),
   color: z
     .string()
     .regex(
