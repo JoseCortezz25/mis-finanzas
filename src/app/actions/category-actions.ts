@@ -42,7 +42,8 @@ export async function createCategory(
 
     const category = await repository.create(
       {
-        ...data
+        ...data,
+        is_custom: true
       },
       user.id
     );
