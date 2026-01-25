@@ -5,10 +5,9 @@ import { notFound } from 'next/navigation';
 import { useBudget } from '@/lib/hooks/use-budgets';
 import { useTransactionsByBudget } from '@/lib/hooks/use-transactions';
 import { BudgetDetailHeader } from '@/domains/budget/components/organisms/budget-detail-header';
-import { BudgetMetrics } from '@/domains/budget/components/organisms/budget-metrics';
+import { BudgetStatsCards } from '@/domains/budget/components/organisms/budget-stats-cards';
 import { BudgetTransactionList } from '@/domains/budget/components/organisms/budget-transaction-list';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { BudgetExpensesPieChart } from '@/domains/budget/components/organisms/budget-expenses-pie-chart';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { BUDGET_DETAIL_MESSAGES } from '@/domains/budget/budget-detail.text-map';
@@ -39,8 +38,8 @@ export default function BudgetDetailPage({ params }: BudgetDetailPageProps) {
   // Handle errors
   if (budgetError || transactionsError) {
     return (
-      <div className="container mx-auto p-6">
-        <Alert variant="destructive">
+      <div className="container mx-auto p-4 md:p-6 lg:p-8">
+        <Alert variant="destructive" className="border-rose-200 bg-rose-50">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {BUDGET_DETAIL_MESSAGES.ERROR.LOAD_FAILED}
@@ -53,54 +52,70 @@ export default function BudgetDetailPage({ params }: BudgetDetailPageProps) {
   // Loading state
   if (isBudgetLoading || !budget) {
     return (
-      <div className="container mx-auto space-y-6 p-6">
-        <Skeleton className="h-10 w-40" />
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="mt-2 h-4 w-32" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <div className="grid grid-cols-2 gap-4">
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
+      <div className="container mx-auto space-y-8 p-4 md:p-6 lg:p-8">
+        <div className="space-y-6">
+          <div className="h-8 w-32 animate-pulse rounded bg-stone-100" />
+          <div className="rounded-2xl border border-stone-200 bg-white p-6 md:p-8">
+            <div className="flex gap-4">
+              <div className="h-16 w-16 animate-pulse rounded-2xl bg-stone-100" />
+              <div className="flex-1 space-y-3">
+                <div className="h-10 w-64 animate-pulse rounded bg-stone-100" />
+                <div className="h-4 w-32 animate-pulse rounded bg-stone-100" />
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-stone-200 bg-white p-6 md:p-8">
+          <div className="space-y-4">
+            <div className="h-6 w-40 animate-pulse rounded bg-stone-100" />
+            <div className="h-12 w-full animate-pulse rounded bg-stone-100" />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="h-28 animate-pulse rounded-xl bg-stone-100" />
+              <div className="h-28 animate-pulse rounded-xl bg-stone-100" />
+              <div className="h-28 animate-pulse rounded-xl bg-stone-100" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <div className="container mx-auto space-y-8 p-4 md:p-6 lg:p-8">
       {/* Header */}
       <BudgetDetailHeader budget={budget} />
 
-      {/* Metrics */}
-      <BudgetMetrics budget={budget} transactions={transactions} />
+      {/* Stats Cards - Ingresos, Gastos, Balance */}
+      <BudgetStatsCards budget={budget} transactions={transactions} />
 
       {/* Transactions List */}
       {isTransactionsLoading ? (
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-48" />
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-24" />
+        <div className="rounded-2xl border border-stone-200 bg-white p-8">
+          <div className="space-y-4">
+            <div className="h-6 w-48 animate-pulse rounded bg-stone-100" />
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-4">
+                  <div className="flex flex-1 items-center gap-3">
+                    <div className="h-10 w-10 animate-pulse rounded-lg bg-stone-100" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-32 animate-pulse rounded bg-stone-100" />
+                      <div className="h-3 w-24 animate-pulse rounded bg-stone-100" />
+                    </div>
+                  </div>
+                  <div className="h-6 w-20 animate-pulse rounded bg-stone-100" />
                 </div>
-                <Skeleton className="h-6 w-20" />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </div>
+          </div>
+        </div>
       ) : (
         <BudgetTransactionList transactions={transactions} budgetId={id} />
+      )}
+
+      {/* Pie Chart - Distribución de gastos por categoría */}
+      {!isTransactionsLoading && (
+        <BudgetExpensesPieChart transactions={transactions} />
       )}
     </div>
   );

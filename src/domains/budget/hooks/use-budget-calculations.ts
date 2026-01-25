@@ -22,7 +22,7 @@ export interface BudgetCalculations {
  * - BR-BD-1: Budget metrics calculations
  *   - Spent = SUM(expense transactions)
  *   - Income = SUM(income transactions)
- *   - Available = budget total + income - spent
+ *   - Available = budget total - spent
  *   - Percentage = (spent / total) × 100
  *   - Budget total_amount is computed from assigned income transactions
  *
@@ -64,8 +64,9 @@ export function useBudgetCalculations(
       .reduce((sum, t) => sum + t.amount, 0);
 
     // Calculate available amount
-    // Available = budget total + income - spent
-    const available = budget.total_amount + totalIncome - totalSpent;
+    // Available = budget total - spent
+    // Note: budget.total_amount already includes income transactions
+    const available = budget.total_amount - totalSpent;
 
     // Calculate percentage used
     // Percentage = (spent / total) × 100

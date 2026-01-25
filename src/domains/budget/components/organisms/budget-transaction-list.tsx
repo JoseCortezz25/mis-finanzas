@@ -2,26 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Receipt,
+  TrendingUp,
+  TrendingDown
+} from 'lucide-react';
 import { BUDGET_DETAIL_MESSAGES } from '@/domains/budget/budget-detail.text-map';
-import { TRANSACTION_MESSAGES } from '@/domains/transaction/messages';
 import { useCategories } from '@/lib/hooks';
 import type { Database } from '@/types/supabase';
 import { cn } from '@/lib/utils';
@@ -33,7 +23,7 @@ interface BudgetTransactionListProps {
   budgetId: string;
 }
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 12;
 
 export function BudgetTransactionList({
   transactions,
@@ -91,205 +81,197 @@ export function BudgetTransactionList({
   // Empty state
   if (transactions.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>{BUDGET_DETAIL_MESSAGES.TRANSACTIONS.TITLE}</CardTitle>
-              <CardDescription>
-                {BUDGET_DETAIL_MESSAGES.TRANSACTIONS.SUBTITLE}
-              </CardDescription>
-            </div>
-            <Button onClick={handleCreateTransaction} className="gap-2">
-              <Plus className="h-4 w-4" />
-              {BUDGET_DETAIL_MESSAGES.ACTIONS.CREATE_TRANSACTION}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-lg font-medium">
-              {BUDGET_DETAIL_MESSAGES.EMPTY.NO_TRANSACTIONS_TITLE}
+      <div className="rounded-2xl border border-stone-200 bg-white p-8">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-foreground text-xl font-semibold">
+              {BUDGET_DETAIL_MESSAGES.TRANSACTIONS.TITLE}
+            </h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {BUDGET_DETAIL_MESSAGES.TRANSACTIONS.SUBTITLE}
             </p>
-            <p className="text-muted-foreground mt-2 text-sm">
-              {BUDGET_DETAIL_MESSAGES.EMPTY.NO_TRANSACTIONS_DESC}
-            </p>
-            <Button onClick={handleCreateTransaction} className="mt-6 gap-2">
-              <Plus className="h-4 w-4" />
-              {BUDGET_DETAIL_MESSAGES.EMPTY.NO_TRANSACTIONS_ACTION}
-            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div
+            className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100"
+            aria-hidden="true"
+          >
+            <Receipt className="h-8 w-8 text-stone-400" />
+          </div>
+          <p className="text-foreground text-lg font-semibold">
+            {BUDGET_DETAIL_MESSAGES.EMPTY.NO_TRANSACTIONS_TITLE}
+          </p>
+          <p className="text-muted-foreground mt-2 max-w-sm text-sm">
+            {BUDGET_DETAIL_MESSAGES.EMPTY.NO_TRANSACTIONS_DESC}
+          </p>
+          <Button onClick={handleCreateTransaction} className="mt-6 gap-2">
+            <Plus className="h-4 w-4" />
+            {BUDGET_DETAIL_MESSAGES.EMPTY.NO_TRANSACTIONS_ACTION}
+          </Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <CardTitle>{BUDGET_DETAIL_MESSAGES.TRANSACTIONS.TITLE}</CardTitle>
-            <CardDescription>
-              {transactions.length}{' '}
-              {transactions.length === 1
-                ? BUDGET_DETAIL_MESSAGES.TRANSACTIONS.COUNT_SINGULAR
-                : BUDGET_DETAIL_MESSAGES.TRANSACTIONS.COUNT}
-            </CardDescription>
-          </div>
-          <Button onClick={handleCreateTransaction} className="gap-2">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {BUDGET_DETAIL_MESSAGES.ACTIONS.CREATE_TRANSACTION}
-            </span>
-            <span className="sm:hidden">Crear</span>
-          </Button>
+    <div className="rounded-2xl border border-stone-200 bg-white p-6 md:p-8">
+      {/* Header */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-foreground text-xl font-semibold">
+            {BUDGET_DETAIL_MESSAGES.TRANSACTIONS.TITLE}
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {transactions.length}{' '}
+            {transactions.length === 1
+              ? BUDGET_DETAIL_MESSAGES.TRANSACTIONS.COUNT_SINGULAR
+              : BUDGET_DETAIL_MESSAGES.TRANSACTIONS.COUNT}
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Desktop table view */}
-        <div className="hidden md:block">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{TRANSACTION_MESSAGES.TABLE.DATE}</TableHead>
-                <TableHead>{TRANSACTION_MESSAGES.TABLE.DESCRIPTION}</TableHead>
-                <TableHead>Categoría</TableHead>
-                <TableHead>{TRANSACTION_MESSAGES.TABLE.TYPE}</TableHead>
-                <TableHead className="text-right">
-                  {TRANSACTION_MESSAGES.TABLE.AMOUNT}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedTransactions.map(transaction => (
-                <TableRow
-                  key={transaction.id}
-                  className="cursor-pointer"
-                  onClick={() => handleViewTransaction(transaction.id)}
-                >
-                  <TableCell className="font-medium">
-                    {formatDate(transaction.date)}
-                  </TableCell>
-                  <TableCell>
-                    {transaction.description || transaction.notes || '-'}
-                  </TableCell>
-                  <TableCell>
-                    {getCategoryLabel(transaction.category_id)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        transaction.type === 'income' ? 'default' : 'secondary'
-                      }
-                    >
-                      {
-                        BUDGET_DETAIL_MESSAGES.TRANSACTION_TYPES[
-                          transaction.type.toUpperCase() as 'EXPENSE' | 'INCOME'
-                        ]
-                      }
-                    </Badge>
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      'text-right font-semibold',
-                      transaction.type === 'income'
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    )}
-                  >
-                    {transaction.type === 'income' ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <Button onClick={handleCreateTransaction} className="gap-2">
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">
+            {BUDGET_DETAIL_MESSAGES.ACTIONS.CREATE_TRANSACTION}
+          </span>
+          <span className="sm:hidden">Crear</span>
+        </Button>
+      </div>
 
-        {/* Mobile card view */}
-        <div className="space-y-3 md:hidden">
-          {paginatedTransactions.map(transaction => (
-            <div
+      {/* Transaction cards */}
+      <div className="space-y-3">
+        {paginatedTransactions.map(transaction => {
+          const isIncome = transaction.type === 'income';
+
+          return (
+            <article
               key={transaction.id}
-              className="hover:bg-accent cursor-pointer rounded-lg border p-4 transition-colors"
+              className={cn(
+                'group relative cursor-pointer touch-manipulation rounded-xl border p-4 transition-all duration-200 hover:shadow-md',
+                isIncome
+                  ? 'border-emerald-100 bg-emerald-50/30 hover:border-emerald-200'
+                  : 'border-rose-100 bg-rose-50/30 hover:border-rose-200'
+              )}
               onClick={() => handleViewTransaction(transaction.id)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleViewTransaction(transaction.id);
+                }
+              }}
+              tabIndex={0}
+              role="button"
+              aria-label={`Ver detalles de transacción: ${transaction.description || getCategoryLabel(transaction.category_id)}`}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-1">
-                  <p className="font-medium">
-                    {transaction.description ||
-                      getCategoryLabel(transaction.category_id)}
-                  </p>
-                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                    <span>{formatDate(transaction.date)}</span>
-                    <span>•</span>
-                    <Badge
-                      variant={
-                        transaction.type === 'income' ? 'default' : 'secondary'
-                      }
-                      className="text-xs"
-                    >
-                      {
-                        BUDGET_DETAIL_MESSAGES.TRANSACTION_TYPES[
-                          transaction.type.toUpperCase() as 'EXPENSE' | 'INCOME'
-                        ]
-                      }
-                    </Badge>
+              <div className="flex items-center justify-between gap-4">
+                {/* Icon and content */}
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div
+                    className={cn(
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-110',
+                      isIncome ? 'bg-emerald-100' : 'bg-rose-100'
+                    )}
+                    aria-hidden="true"
+                  >
+                    {isIncome ? (
+                      <TrendingUp className="h-5 w-5 text-emerald-600" />
+                    ) : (
+                      <TrendingDown className="h-5 w-5 text-rose-600" />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-foreground truncate font-semibold">
+                      {transaction.description ||
+                        getCategoryLabel(transaction.category_id)}
+                    </p>
+                    <div className="mt-0.5 flex items-center gap-2">
+                      <time className="text-muted-foreground text-sm">
+                        {formatDate(transaction.date)}
+                      </time>
+                      <span className="text-stone-300" aria-hidden="true">
+                        •
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {getCategoryLabel(transaction.category_id)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <p
-                  className={cn(
-                    'text-lg font-semibold',
-                    transaction.type === 'income'
-                      ? 'text-green-600'
-                      : 'text-red-600'
-                  )}
-                >
-                  {transaction.type === 'income' ? '+' : '-'}
-                  {formatCurrency(transaction.amount)}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t pt-4">
-            <p className="text-muted-foreground text-sm">
-              {BUDGET_DETAIL_MESSAGES.PAGINATION.SHOWING} {startIndex + 1} -{' '}
-              {Math.min(endIndex, transactions.length)}{' '}
-              {BUDGET_DETAIL_MESSAGES.PAGINATION.OF} {transactions.length}{' '}
-              {BUDGET_DETAIL_MESSAGES.TRANSACTIONS.COUNT}
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                {BUDGET_DETAIL_MESSAGES.PAGINATION.PREVIOUS}
-              </Button>
-              <div className="flex items-center gap-2 px-3 text-sm">
-                {BUDGET_DETAIL_MESSAGES.PAGINATION.PAGE} {currentPage}{' '}
-                {BUDGET_DETAIL_MESSAGES.PAGINATION.OF} {totalPages}
+                {/* Amount */}
+                <div className="shrink-0 text-right">
+                  <p
+                    className={cn(
+                      'text-xl font-bold tabular-nums',
+                      isIncome ? 'text-emerald-700' : 'text-rose-700'
+                    )}
+                  >
+                    {isIncome ? '+' : '-'}
+                    {formatCurrency(transaction.amount)}
+                  </p>
+                  <span
+                    className={cn(
+                      'text-xs font-medium',
+                      isIncome ? 'text-emerald-600' : 'text-rose-600'
+                    )}
+                  >
+                    {
+                      BUDGET_DETAIL_MESSAGES.TRANSACTION_TYPES[
+                        transaction.type.toUpperCase() as 'EXPENSE' | 'INCOME'
+                      ]
+                    }
+                  </span>
+                </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                {BUDGET_DETAIL_MESSAGES.PAGINATION.NEXT}
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+            </article>
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-stone-200 pt-6 sm:flex-row">
+          <p className="text-muted-foreground text-sm">
+            {BUDGET_DETAIL_MESSAGES.PAGINATION.SHOWING} {startIndex + 1} -{' '}
+            {Math.min(endIndex, transactions.length)}{' '}
+            {BUDGET_DETAIL_MESSAGES.PAGINATION.OF} {transactions.length}{' '}
+            {BUDGET_DETAIL_MESSAGES.TRANSACTIONS.COUNT}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className="gap-1"
+              aria-label="Página anterior"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {BUDGET_DETAIL_MESSAGES.PAGINATION.PREVIOUS}
+              </span>
+            </Button>
+            <div className="flex items-center gap-2 px-3 text-sm font-medium tabular-nums">
+              {currentPage} / {totalPages}
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="gap-1"
+              aria-label="Página siguiente"
+            >
+              <span className="hidden sm:inline">
+                {BUDGET_DETAIL_MESSAGES.PAGINATION.NEXT}
+              </span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }

@@ -21,6 +21,14 @@ export const DASHBOARD_MESSAGES = {
     HISTORICAL: 'Histórico'
   },
 
+  // Stats Cards Section (New design)
+  STATS_CARDS: {
+    INCOME_LABEL: 'Ingresos del mes',
+    EXPENSES_LABEL: 'Gastos del mes',
+    BALANCE_LABEL: 'Balance total',
+    VS_PREVIOUS_MONTH: 'vs mes anterior'
+  },
+
   // Sections
   SECTIONS: {
     ACTIVE_BUDGETS_TITLE: 'Presupuestos Activos',
