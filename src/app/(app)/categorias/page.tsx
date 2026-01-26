@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCategories } from '@/lib/hooks';
@@ -12,25 +11,13 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
 import { PageLayout } from '@/components/templates/page-layout';
 import { EmptyState } from '@/components/molecules/empty-state';
 import { CategoryList } from '@/domains/categories/components/organisms/category-list';
-import { CategoryForm } from '@/domains/categories/components/organisms/category-form';
 import { CATEGORIES_MESSAGES } from '@/domains/categories/messages';
-import {
-  createCategory,
-  updateCategory,
-  deleteCategory
-} from '@/app/actions/category-actions';
+import { deleteCategory } from '@/app/actions/category-actions';
 import { toast } from 'sonner';
 import type { Category } from '@/lib/repositories/category-repository';
-import type { CategoryFormValues } from '@/lib/validations/category-schema';
 
 /**
  * Categorias Page
@@ -39,9 +26,6 @@ import type { CategoryFormValues } from '@/lib/validations/category-schema';
 export default function CategoriasPage() {
   const router = useRouter();
   const { data: categories, isLoading } = useCategories();
-  const [formDialogOpen, setFormDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const customCategories = categories?.filter(c => c.is_custom) || [];
 
@@ -50,41 +34,7 @@ export default function CategoriasPage() {
   };
 
   const handleEdit = (category: Category) => {
-    setEditingCategory(category);
-    setFormDialogOpen(true);
-  };
-
-  const handleSubmit = async (data: CategoryFormValues) => {
-    setIsSubmitting(true);
-
-    try {
-      if (editingCategory) {
-        const result = await updateCategory(editingCategory.id, data);
-        if (result.success) {
-          toast.success(CATEGORIES_MESSAGES.SUCCESS.UPDATED);
-          setFormDialogOpen(false);
-          setEditingCategory(null);
-        } else {
-          toast.error(result.error);
-        }
-      } else {
-        // Add default type for backward compatibility
-        const result = await createCategory({
-          ...data,
-          type: 'expense'
-        });
-        if (result.success) {
-          toast.success(CATEGORIES_MESSAGES.SUCCESS.CREATED);
-          setFormDialogOpen(false);
-        } else {
-          toast.error(result.error);
-        }
-      }
-    } catch {
-      toast.error(CATEGORIES_MESSAGES.ERROR.GENERIC);
-    } finally {
-      setIsSubmitting(false);
-    }
+    router.push(`/categorias/${category.id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
@@ -136,30 +86,6 @@ export default function CategoriasPage() {
           </CardContent>
         </Card>
       )}
-
-      {/* Edit Dialog */}
-      <Dialog open={formDialogOpen} onOpenChange={setFormDialogOpen}>
-        <DialogContent className="max-w-[95%] md:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{CATEGORIES_MESSAGES.FORM.TITLE_EDIT}</DialogTitle>
-          </DialogHeader>
-          <CategoryForm
-            onSubmit={handleSubmit}
-            defaultValues={
-              editingCategory
-                ? {
-                    name: editingCategory.name,
-                    description: editingCategory.description || '',
-                    color: editingCategory.color || '#A5B4FC',
-                    icon: editingCategory.icon || 'more-horizontal'
-                  }
-                : undefined
-            }
-            isLoading={isSubmitting}
-            submitLabel={CATEGORIES_MESSAGES.FORM.SUBMIT_UPDATE}
-          />
-        </DialogContent>
-      </Dialog>
     </PageLayout>
   );
 }

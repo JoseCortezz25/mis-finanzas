@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { PageHeader } from '@/components/organisms/page-header';
+import { cn } from '@/lib/utils';
 
 interface PageLayoutProps {
   title: string;
@@ -8,6 +9,7 @@ interface PageLayoutProps {
   children: ReactNode;
   isLoading?: boolean;
   loadingMessage?: string;
+  className?: string;
 }
 
 /**
@@ -20,6 +22,7 @@ export function PageLayout({
   actions,
   children,
   isLoading,
+  className,
   loadingMessage = 'Cargando...'
 }: PageLayoutProps) {
   if (isLoading) {
@@ -31,7 +34,7 @@ export function PageLayout({
   }
 
   return (
-    <div className="container mx-auto space-y-6 px-6 py-6">
+    <div className={cn('container mx-auto space-y-6 px-6 py-6', className)}>
       {actions ? (
         <div className="flex items-start justify-between gap-4">
           <PageHeader title={title} description={description} />

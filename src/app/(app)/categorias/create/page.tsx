@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { CategoryForm } from '@/domains/categories/components/organisms/category-form';
 import { CATEGORIES_MESSAGES } from '@/domains/categories/messages';
 import { createCategory } from '@/app/actions/category-actions';
@@ -53,13 +52,9 @@ export default function CategoriasCreatePage() {
 
   return (
     <PageLayout
+      className="md:max-w-[60%]"
       title={CATEGORIES_MESSAGES.CREATE_PAGE.TITLE}
       description={CATEGORIES_MESSAGES.CREATE_PAGE.SUBTITLE}
-      actions={
-        <Button variant="outline" onClick={handleCancel}>
-          {CATEGORIES_MESSAGES.CREATE_PAGE.BACK}
-        </Button>
-      }
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Card>

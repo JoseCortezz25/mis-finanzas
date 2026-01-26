@@ -58,7 +58,7 @@ export function CategoryForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-h-[80dvh] space-y-6 overflow-y-scroll md:space-y-8"
+        className="space-y-6 md:space-y-8"
       >
         {/* Name Field */}
         <FormField

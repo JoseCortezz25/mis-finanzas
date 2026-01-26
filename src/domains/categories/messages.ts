@@ -53,6 +53,19 @@ export const CATEGORIES_MESSAGES = {
       'Las categorías personalizadas se muestran junto a las predeterminadas en tus transacciones.'
   },
 
+  EDIT_PAGE: {
+    TITLE: 'Editar categoría',
+    SUBTITLE: 'Actualiza los detalles de tu categoría personalizada',
+    BACK: 'Volver a categorías',
+    FORM_TITLE: 'Detalles de la categoría',
+    FORM_DESCRIPTION: 'Ajusta el nombre, descripción, color e ícono.',
+    NOTE_TITLE: 'Nota',
+    NOTE_DESCRIPTION:
+      'Los cambios se reflejarán en transacciones futuras que usen esta categoría.',
+    NOT_FOUND_TITLE: 'Categoría no encontrada',
+    NOT_FOUND_DESCRIPTION: 'No pudimos cargar esta categoría. Intenta regresar.'
+  },
+
   ACTIONS: {
     CREATE: 'Nueva Categoría',
     EDIT: 'Editar',

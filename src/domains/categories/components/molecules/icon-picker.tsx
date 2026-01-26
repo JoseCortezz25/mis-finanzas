@@ -41,7 +41,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-3 overflow-y-auto md:max-h-[200px] md:grid-cols-5">
+      <div className="grid grid-cols-4 gap-3 md:grid-cols-5">
         {filteredIcons.map(icon => (
           <IconPreview
             key={icon.id}
