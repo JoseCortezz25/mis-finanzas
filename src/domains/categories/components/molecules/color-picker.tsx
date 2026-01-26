@@ -16,10 +16,10 @@ interface ColorPickerProps {
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-gray-700">
+      <label className="mb-4 text-sm font-medium text-gray-700">
         {CATEGORIES_MESSAGES.FORM.COLOR_LABEL}
       </label>
-      <div className="grid grid-cols-5 gap-3">
+      <div className="flex flex-wrap gap-2">
         {PASTEL_COLORS.map(color => (
           <ColorDot
             key={color.id}

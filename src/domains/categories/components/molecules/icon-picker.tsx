@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AVAILABLE_ICONS } from '../../constants/icons';
 import { IconPreview } from '../atoms/icon-preview';
 import { CATEGORIES_MESSAGES } from '../../messages';
@@ -24,18 +23,9 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
     icon.label.toLowerCase().includes(search.toLowerCase())
   );
 
-  const iconsByCategory = {
-    all: filteredIcons,
-    general: filteredIcons.filter(i => i.category === 'general'),
-    transport: filteredIcons.filter(i => i.category === 'transport'),
-    food: filteredIcons.filter(i => i.category === 'food'),
-    lifestyle: filteredIcons.filter(i => i.category === 'lifestyle'),
-    money: filteredIcons.filter(i => i.category === 'money')
-  };
-
   return (
     <div className="space-y-4">
-      <label className="text-sm font-medium text-gray-700">
+      <label className="mb-4 text-sm font-medium text-gray-700">
         {CATEGORIES_MESSAGES.FORM.ICON_LABEL}
       </label>
 
@@ -51,32 +41,16 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         />
       </div>
 
-      {/* Category tabs */}
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="transport">Transporte</TabsTrigger>
-          <TabsTrigger value="food">Comida</TabsTrigger>
-          <TabsTrigger value="lifestyle">Estilo</TabsTrigger>
-          <TabsTrigger value="money">Dinero</TabsTrigger>
-        </TabsList>
-
-        {Object.entries(iconsByCategory).map(([key, icons]) => (
-          <TabsContent key={key} value={key} className="mt-4">
-            <div className="grid max-h-[300px] grid-cols-4 gap-3 overflow-y-auto">
-              {icons.map(icon => (
-                <IconPreview
-                  key={icon.id}
-                  icon={icon}
-                  isSelected={value === icon.id}
-                  onClick={() => onChange(icon.id)}
-                />
-              ))}
-            </div>
-          </TabsContent>
+      <div className="grid grid-cols-4 gap-3 overflow-y-auto md:max-h-[200px] md:grid-cols-5">
+        {filteredIcons.map(icon => (
+          <IconPreview
+            key={icon.id}
+            icon={icon}
+            isSelected={value === icon.id}
+            onClick={() => onChange(icon.id)}
+          />
         ))}
-      </Tabs>
+      </div>
 
       <p className="text-xs text-gray-500">
         {CATEGORIES_MESSAGES.FORM.ICON_HELPER}

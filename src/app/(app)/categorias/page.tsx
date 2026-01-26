@@ -139,7 +139,7 @@ export default function CategoriasPage() {
 
       {/* Edit Dialog */}
       <Dialog open={formDialogOpen} onOpenChange={setFormDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-[95%] md:max-w-2xl">
           <DialogHeader>
             <DialogTitle>{CATEGORIES_MESSAGES.FORM.TITLE_EDIT}</DialogTitle>
           </DialogHeader>

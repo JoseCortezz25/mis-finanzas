@@ -56,7 +56,10 @@ export function CategoryForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-h-[80dvh] space-y-6 overflow-y-scroll md:space-y-8"
+      >
         {/* Name Field */}
         <FormField
           control={form.control}
@@ -138,7 +141,11 @@ export function CategoryForm({
               {cancelLabel || CATEGORIES_MESSAGES.ACTIONS.CANCEL}
             </Button>
           )}
-          <Button type="submit" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full md:w-auto"
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {submitLabel || CATEGORIES_MESSAGES.FORM.SUBMIT_CREATE}
           </Button>

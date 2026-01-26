@@ -31,7 +31,7 @@ export function ColorDot({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex items-center justify-center rounded-full border-2 transition-all',
+        'flex items-center justify-center rounded-2xl transition-all',
         sizeClasses,
         isSelected
           ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2'

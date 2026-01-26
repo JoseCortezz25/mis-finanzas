@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
 import type { IconOption } from '../../constants/icons';
 
 interface IconPreviewProps {
@@ -29,13 +28,8 @@ export function IconPreview({ icon, isSelected, onClick }: IconPreviewProps) {
       )}
       aria-label={icon.label}
     >
-      <IconComponent className="h-6 w-6" strokeWidth={1.5} />
+      <IconComponent className="size-5" strokeWidth={1.5} />
       <span className="text-xs font-medium text-gray-600">{icon.label}</span>
-      {isSelected && (
-        <div className="bg-primary absolute -top-1 -right-1 rounded-full p-0.5">
-          <Check className="h-3 w-3 text-white" />
-        </div>
-      )}
     </button>
   );
 }

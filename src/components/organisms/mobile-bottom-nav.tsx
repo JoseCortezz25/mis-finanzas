@@ -46,7 +46,7 @@ export function MobileBottomNav() {
                   : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               )}
             >
-              <Icon className="size-3 sm:size-4" />
+              <Icon className="size-5 sm:size-4" />
               <span className="hidden text-[10px] leading-none font-medium sm:block md:text-[14px]">
                 {item.label}
               </span>
