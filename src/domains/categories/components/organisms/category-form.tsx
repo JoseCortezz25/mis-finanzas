@@ -137,6 +137,7 @@ export function CategoryForm({
               variant="outline"
               onClick={onCancel}
               disabled={isLoading}
+              className="w-full md:w-auto"
             >
               {cancelLabel || CATEGORIES_MESSAGES.ACTIONS.CANCEL}
             </Button>
