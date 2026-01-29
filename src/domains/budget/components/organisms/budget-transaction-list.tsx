@@ -13,6 +13,9 @@ import {
 } from 'lucide-react';
 import { BUDGET_DETAIL_MESSAGES } from '@/domains/budget/budget-detail.text-map';
 import { useCategories } from '@/lib/hooks';
+import { AllocationBadge } from '@/domains/budget/components/atoms/allocation-badge';
+import { DeleteAllocationDialog } from '@/domains/budget/components/molecules/delete-allocation-dialog';
+import { allocationTextMap } from '@/domains/budget/allocation.text-map';
 import type { Database } from '@/types/supabase';
 import { cn } from '@/lib/utils';
 
@@ -143,38 +146,56 @@ export function BudgetTransactionList({
       <div className="space-y-3">
         {paginatedTransactions.map(transaction => {
           const isIncome = transaction.type === 'income';
+          const isAllocation = transaction.type === 'allocation';
 
           return (
             <article
               key={transaction.id}
               className={cn(
-                'group relative cursor-pointer touch-manipulation rounded-xl border p-4 transition-all duration-200 hover:shadow-md',
-                isIncome
-                  ? 'border-emerald-100 bg-emerald-50/30 hover:border-emerald-200'
-                  : 'border-rose-100 bg-rose-50/30 hover:border-rose-200'
+                'group relative touch-manipulation rounded-xl border p-4 transition-all duration-200',
+                isAllocation &&
+                  'border-blue-100 bg-blue-50/30 hover:border-blue-200 hover:shadow-md',
+                !isAllocation && 'cursor-pointer hover:shadow-md',
+                !isAllocation &&
+                  isIncome &&
+                  'border-emerald-100 bg-emerald-50/30 hover:border-emerald-200',
+                !isAllocation &&
+                  !isIncome &&
+                  'border-rose-100 bg-rose-50/30 hover:border-rose-200'
               )}
-              onClick={() => handleViewTransaction(transaction.id)}
+              onClick={() =>
+                !isAllocation && handleViewTransaction(transaction.id)
+              }
               onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (!isAllocation && (e.key === 'Enter' || e.key === ' ')) {
                   e.preventDefault();
                   handleViewTransaction(transaction.id);
                 }
               }}
-              tabIndex={0}
-              role="button"
-              aria-label={`Ver detalles de transacción: ${transaction.description || getCategoryLabel(transaction.category_id)}`}
+              tabIndex={isAllocation ? -1 : 0}
+              role={isAllocation ? 'article' : 'button'}
+              aria-label={
+                isAllocation
+                  ? `Asignación: ${formatCurrency(transaction.amount)}`
+                  : `Ver detalles de transacción: ${transaction.description || getCategoryLabel(transaction.category_id)}`
+              }
             >
               <div className="flex items-center justify-between gap-4">
                 {/* Icon and content */}
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <div
                     className={cn(
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-110',
-                      isIncome ? 'bg-emerald-100' : 'bg-rose-100'
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-200',
+                      !isAllocation && 'group-hover:scale-110',
+                      isAllocation && 'bg-blue-100',
+                      !isAllocation && isIncome && 'bg-emerald-100',
+                      !isAllocation && !isIncome && 'bg-rose-100'
                     )}
                     aria-hidden="true"
                   >
-                    {isIncome ? (
+                    {isAllocation ? (
+                      <TrendingUp className="h-5 w-5 text-blue-600" />
+                    ) : isIncome ? (
                       <TrendingUp className="h-5 w-5 text-emerald-600" />
                     ) : (
                       <TrendingDown className="h-5 w-5 text-rose-600" />
@@ -182,10 +203,16 @@ export function BudgetTransactionList({
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-foreground truncate font-semibold">
-                      {transaction.description ||
-                        getCategoryLabel(transaction.category_id)}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {isAllocation && <AllocationBadge />}
+                      <p className="text-foreground truncate font-semibold">
+                        {isAllocation
+                          ? transaction.description ||
+                            allocationTextMap.allocationDescription
+                          : transaction.description ||
+                            getCategoryLabel(transaction.category_id)}
+                      </p>
+                    </div>
                     <div className="mt-0.5 flex items-center gap-2">
                       <time className="text-muted-foreground text-sm">
                         {formatDate(transaction.date)}
@@ -200,29 +227,45 @@ export function BudgetTransactionList({
                   </div>
                 </div>
 
-                {/* Amount */}
-                <div className="shrink-0 text-right">
-                  <p
-                    className={cn(
-                      'text-xl font-bold tabular-nums',
-                      isIncome ? 'text-emerald-700' : 'text-rose-700'
-                    )}
-                  >
-                    {isIncome ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
-                  </p>
-                  <span
-                    className={cn(
-                      'text-xs font-medium',
-                      isIncome ? 'text-emerald-600' : 'text-rose-600'
-                    )}
-                  >
-                    {
-                      BUDGET_DETAIL_MESSAGES.TRANSACTION_TYPES[
-                        transaction.type.toUpperCase() as 'EXPENSE' | 'INCOME'
-                      ]
-                    }
-                  </span>
+                {/* Amount and Actions */}
+                <div className="flex shrink-0 items-center gap-2">
+                  <div className="text-right">
+                    <p
+                      className={cn(
+                        'text-xl font-bold tabular-nums',
+                        isAllocation && 'text-blue-700',
+                        !isAllocation && isIncome && 'text-emerald-700',
+                        !isAllocation && !isIncome && 'text-rose-700'
+                      )}
+                    >
+                      {isAllocation || isIncome ? '+' : '-'}
+                      {formatCurrency(transaction.amount)}
+                    </p>
+                    <span
+                      className={cn(
+                        'text-xs font-medium',
+                        isAllocation && 'text-blue-600',
+                        !isAllocation && isIncome && 'text-emerald-600',
+                        !isAllocation && !isIncome && 'text-rose-600'
+                      )}
+                    >
+                      {isAllocation
+                        ? allocationTextMap.allocationLabel
+                        : BUDGET_DETAIL_MESSAGES.TRANSACTION_TYPES[
+                            transaction.type.toUpperCase() as
+                              | 'EXPENSE'
+                              | 'INCOME'
+                          ]}
+                    </span>
+                  </div>
+
+                  {/* Delete button for allocations */}
+                  {isAllocation && (
+                    <DeleteAllocationDialog
+                      allocationId={transaction.id}
+                      budgetId={budgetId}
+                    />
+                  )}
                 </div>
               </div>
             </article>

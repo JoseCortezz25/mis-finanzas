@@ -5,6 +5,7 @@ import { DASHBOARD_MESSAGES } from '@/domains/dashboard/messages';
 import { ActiveBudgetsSection } from '@/domains/dashboard/components/active-budgets-section';
 import { BalanceGaugeCard } from '@/domains/dashboard/components/organisms/balance-gauge-card';
 import { StatsCardsSection } from '@/domains/dashboard/components/organisms/stats-cards-section';
+import { AllocationDistributionChart } from '@/domains/budget/components/organisms/allocation-distribution-chart';
 
 export default function DashboardPage() {
   const { data: transactions, isLoading: transactionsLoading } =
@@ -29,6 +30,9 @@ export default function DashboardPage() {
         categories={categories}
         isLoading={transactionsLoading || categoriesLoading}
       />
+
+      {/* Allocation Distribution Chart */}
+      <AllocationDistributionChart />
 
       {/* Active Budgets Section - New distinctive design */}
       <ActiveBudgetsSection />

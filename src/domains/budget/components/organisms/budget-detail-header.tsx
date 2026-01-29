@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, Plus } from 'lucide-react';
 import { BUDGET_DETAIL_MESSAGES } from '@/domains/budget/budget-detail.text-map';
 import { BUDGET_CATEGORIES } from '@/domains/budget/constants/categories';
+import { AllocationForm } from '@/domains/budget/components/molecules/allocation-form';
+import { allocationTextMap } from '@/domains/budget/allocation.text-map';
 import type { Database } from '@/types/supabase';
 
 type Budget = Database['public']['Tables']['budgets']['Row'];
@@ -21,6 +24,7 @@ const STATUS_CONFIG = {
 
 export function BudgetDetailHeader({ budget }: BudgetDetailHeaderProps) {
   const router = useRouter();
+  const [isAllocationFormOpen, setIsAllocationFormOpen] = useState(false);
 
   const category = budget.category
     ? BUDGET_CATEGORIES.find(c => c.id === budget.category)
@@ -115,22 +119,47 @@ export function BudgetDetailHeader({ budget }: BudgetDetailHeaderProps) {
             </div>
           </div>
 
-          {/* Edit button */}
-          <Button
-            variant="outline"
-            size="default"
-            onClick={handleEdit}
-            className="shrink-0 gap-2"
-            aria-label={BUDGET_DETAIL_MESSAGES.ACTIONS.EDIT_BUDGET}
-          >
-            <Edit className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {BUDGET_DETAIL_MESSAGES.ACTIONS.EDIT_BUDGET}
-            </span>
-            <span className="sm:hidden">Editar</span>
-          </Button>
+          {/* Action buttons */}
+          <div className="flex shrink-0 gap-2">
+            <Button
+              variant="outline"
+              size="default"
+              onClick={() => setIsAllocationFormOpen(!isAllocationFormOpen)}
+              className="gap-2 text-sm"
+              aria-label={allocationTextMap.addAllocationButton}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {allocationTextMap.addAllocationButton}
+              </span>
+              <span className="sm:hidden">Añadir</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="default"
+              onClick={handleEdit}
+              className="gap-2 text-sm"
+              aria-label={BUDGET_DETAIL_MESSAGES.ACTIONS.EDIT_BUDGET}
+            >
+              <Edit className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {BUDGET_DETAIL_MESSAGES.ACTIONS.EDIT_BUDGET}
+              </span>
+              <span className="sm:hidden">Editar</span>
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Allocation Form - Inline */}
+      {isAllocationFormOpen && (
+        <AllocationForm
+          budgetId={budget.id}
+          onSuccess={() => setIsAllocationFormOpen(false)}
+          onCancel={() => setIsAllocationFormOpen(false)}
+        />
+      )}
     </div>
   );
 }
